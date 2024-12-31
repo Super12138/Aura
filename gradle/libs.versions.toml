@@ -1,0 +1,36 @@
+[versions]
+android-minSdk = "26"
+android-compileSdk = "35"
+android-targetSdk = "35"
+android-buildToolsVersion = "35.0.0"
+android-ndkVersion = "28.0.12674087"
+android-versionName = "1.0.0-alpha01"
+android-versionCode = "1"
+
+agp = "8.7.3" # https://androidstudio.googleblog.com
+kotlin = "2.1.0" # https://github.com/JetBrains/kotlin
+
+m3color = "2024.6" # https://github.com/Kyant0/m3color
+
+benchmark = "1.3.3"
+runner = "1.6.2"
+junit = "1.2.1"
+junitVersion = "4.13.2"
+benchmarkJunit4 = "1.3.3"
+
+[libraries]
+m3color = { module = "com.github.Kyant0:m3color", version.ref = "m3color" }
+
+runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
+junit-junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
+benchmark-junit4 = { group = "androidx.benchmark", name = "benchmark-junit4", version.ref = "benchmarkJunit4" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+benchmark = { id = "androidx.benchmark", version.ref = "benchmark" }
