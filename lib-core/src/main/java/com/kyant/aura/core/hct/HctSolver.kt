@@ -41,9 +41,7 @@ import com.kyant.aura.core.utils.ColorUtils.Y_FROM_LINRGB_R
 import com.kyant.aura.core.utils.MathUtils
 import kotlin.math.abs
 import kotlin.math.atan2
-import kotlin.math.ceil
 import kotlin.math.cos
-import kotlin.math.floor
 import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.pow
@@ -320,16 +318,14 @@ internal object HctSolver {
      * @param rgbComponent 0.0 <= rgb_component <= 100.0, represents linear R/G/B channel
      * @return 0.0 <= output <= 255.0, color channel converted to regular RGB space
      */
+    @Suppress("NOTHING_TO_INLINE")
     @JvmStatic
-    private fun trueDelinearized(rgbComponent: Double): Double {
-        val normalized = rgbComponent / 100.0
-        val delinearized =
-            if (normalized <= 0.0031308) {
-                normalized * 12.92
-            } else {
-                1.055 * normalized.pow(1.0 / 2.4) - 0.055
-            }
-        return delinearized * 255.0
+    private inline fun trueDelinearized(rgbComponent: Double): Double {
+        return if (rgbComponent <= 0.31308) {
+            rgbComponent * 32.946
+        } else {
+            269.025 * (rgbComponent / 100.0).pow(1.0 / 2.4) - 14.025
+        }
     }
 
     /**
@@ -1026,35 +1022,35 @@ internal object HctSolver {
             var lPlane: Int
             var rPlane: Int
             if (leftR < rightR) {
-                lPlane = floor(trueDelinearized(leftR) - 0.5).toInt()
-                rPlane = ceil(trueDelinearized(rightR) - 0.5).toInt()
+                lPlane =
+                    if (leftR >= 0.015176349177441876) (trueDelinearized(leftR) - 0.5).toInt()
+                    else -1
+                rPlane = (trueDelinearized(rightR) + 0.5).toInt()
             } else {
-                lPlane = ceil(trueDelinearized(leftR) - 0.5).toInt()
-                rPlane = floor(trueDelinearized(rightR) - 0.5).toInt()
+                lPlane = (trueDelinearized(leftR) + 0.5).toInt()
+                rPlane =
+                    if (rightR >= 0.015176349177441876) (trueDelinearized(rightR) - 0.5).toInt()
+                    else -1
             }
-            for (i in 0..7) {
-                if (abs(rPlane - lPlane) <= 1) {
-                    break
+            while (abs(rPlane - lPlane) > 1) {
+                val mPlane = (lPlane + rPlane) / 2
+                val midPlaneCoordinate = CRITICAL_PLANES[mPlane]
+                val t = (midPlaneCoordinate - leftR) / (rightR - leftR)
+                midR = midPlaneCoordinate
+                midG = leftG + (rightG - leftG) * t
+                midB = leftB + (rightB - leftB) * t
+                midHue = hueOf(midR, midG, midB)
+                if (areInCyclicOrder(leftHue, targetHue, midHue)) {
+                    rightR = midR
+                    rightG = midG
+                    rightB = midB
+                    rPlane = mPlane
                 } else {
-                    val mPlane = floor((lPlane + rPlane) / 2.0).toInt()
-                    val midPlaneCoordinate = CRITICAL_PLANES[mPlane]
-                    val t = (midPlaneCoordinate - leftR) / (rightR - leftR)
-                    midR = leftR + (rightR - leftR) * t
-                    midG = leftG + (rightG - leftG) * t
-                    midB = leftB + (rightB - leftB) * t
-                    val midHue = hueOf(midR, midG, midB)
-                    if (areInCyclicOrder(leftHue, targetHue, midHue)) {
-                        rightR = midR
-                        rightG = midG
-                        rightB = midB
-                        rPlane = mPlane
-                    } else {
-                        leftR = midR
-                        leftG = midG
-                        leftB = midB
-                        leftHue = midHue
-                        lPlane = mPlane
-                    }
+                    leftR = midR
+                    leftG = midG
+                    leftB = midB
+                    leftHue = midHue
+                    lPlane = mPlane
                 }
             }
         }
@@ -1063,35 +1059,35 @@ internal object HctSolver {
             var lPlane: Int
             var rPlane: Int
             if (leftG < rightG) {
-                lPlane = floor(trueDelinearized(leftG) - 0.5).toInt()
-                rPlane = ceil(trueDelinearized(rightG) - 0.5).toInt()
+                lPlane =
+                    if (leftG >= 0.015176349177441876) (trueDelinearized(leftG) - 0.5).toInt()
+                    else -1
+                rPlane = (trueDelinearized(rightG) + 0.5).toInt()
             } else {
-                lPlane = ceil(trueDelinearized(leftG) - 0.5).toInt()
-                rPlane = floor(trueDelinearized(rightG) - 0.5).toInt()
+                lPlane = (trueDelinearized(leftG) + 0.5).toInt()
+                rPlane =
+                    if (rightG >= 0.015176349177441876) (trueDelinearized(rightG) - 0.5).toInt()
+                    else -1
             }
-            for (i in 0..7) {
-                if (abs(rPlane - lPlane) <= 1) {
-                    break
+            while (abs(rPlane - lPlane) > 1) {
+                val mPlane = (lPlane + rPlane) / 2
+                val midPlaneCoordinate = CRITICAL_PLANES[mPlane]
+                val t = (midPlaneCoordinate - leftG) / (rightG - leftG)
+                midR = leftR + (rightR - leftR) * t
+                midG = midPlaneCoordinate
+                midB = leftB + (rightB - leftB) * t
+                midHue = hueOf(midR, midG, midB)
+                if (areInCyclicOrder(leftHue, targetHue, midHue)) {
+                    rightR = midR
+                    rightG = midG
+                    rightB = midB
+                    rPlane = mPlane
                 } else {
-                    val mPlane = floor((lPlane + rPlane) / 2.0).toInt()
-                    val midPlaneCoordinate = CRITICAL_PLANES[mPlane]
-                    val t = (midPlaneCoordinate - leftG) / (rightG - leftG)
-                    midR = leftR + (rightR - leftR) * t
-                    midG = leftG + (rightG - leftG) * t
-                    midB = leftB + (rightB - leftB) * t
-                    val midHue = hueOf(midR, midG, midB)
-                    if (areInCyclicOrder(leftHue, targetHue, midHue)) {
-                        rightR = midR
-                        rightG = midG
-                        rightB = midB
-                        rPlane = mPlane
-                    } else {
-                        leftR = midR
-                        leftG = midG
-                        leftB = midB
-                        leftHue = midHue
-                        lPlane = mPlane
-                    }
+                    leftR = midR
+                    leftG = midG
+                    leftB = midB
+                    leftHue = midHue
+                    lPlane = mPlane
                 }
             }
         }
@@ -1100,35 +1096,35 @@ internal object HctSolver {
             var lPlane: Int
             var rPlane: Int
             if (leftB < rightB) {
-                lPlane = floor(trueDelinearized(leftB) - 0.5).toInt()
-                rPlane = ceil(trueDelinearized(rightB) - 0.5).toInt()
+                lPlane =
+                    if (leftB >= 0.015176349177441876) (trueDelinearized(leftB) - 0.5).toInt()
+                    else -1
+                rPlane = (trueDelinearized(rightB) + 0.5).toInt()
             } else {
-                lPlane = ceil(trueDelinearized(leftB) - 0.5).toInt()
-                rPlane = floor(trueDelinearized(rightB) - 0.5).toInt()
+                lPlane = (trueDelinearized(leftB) + 0.5).toInt()
+                rPlane =
+                    if (rightB >= 0.015176349177441876) (trueDelinearized(rightB) - 0.5).toInt()
+                    else -1
             }
-            for (i in 0..7) {
-                if (abs(rPlane - lPlane) <= 1) {
-                    break
+            while (abs(rPlane - lPlane) > 1) {
+                val mPlane = (lPlane + rPlane) / 2
+                val midPlaneCoordinate = CRITICAL_PLANES[mPlane]
+                val t = (midPlaneCoordinate - leftB) / (rightB - leftB)
+                midR = leftR + (rightR - leftR) * t
+                midG = leftG + (rightG - leftG) * t
+                midB = midPlaneCoordinate
+                midHue = hueOf(midR, midG, midB)
+                if (areInCyclicOrder(leftHue, targetHue, midHue)) {
+                    rightR = midR
+                    rightG = midG
+                    rightB = midB
+                    rPlane = mPlane
                 } else {
-                    val mPlane = floor((lPlane + rPlane) / 2.0).toInt()
-                    val midPlaneCoordinate = CRITICAL_PLANES[mPlane]
-                    val t = (midPlaneCoordinate - leftB) / (rightB - leftB)
-                    midR = leftR + (rightR - leftR) * t
-                    midG = leftG + (rightG - leftG) * t
-                    midB = leftB + (rightB - leftB) * t
-                    val midHue = hueOf(midR, midG, midB)
-                    if (areInCyclicOrder(leftHue, targetHue, midHue)) {
-                        rightR = midR
-                        rightG = midG
-                        rightB = midB
-                        rPlane = mPlane
-                    } else {
-                        leftR = midR
-                        leftG = midG
-                        leftB = midB
-                        leftHue = midHue
-                        lPlane = mPlane
-                    }
+                    leftR = midR
+                    leftG = midG
+                    leftB = midB
+                    leftHue = midHue
+                    lPlane = mPlane
                 }
             }
         }

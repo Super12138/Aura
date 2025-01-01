@@ -27,7 +27,7 @@ import kotlin.math.roundToInt
  * CAM16.
  */
 internal object ColorUtils {
-    private val SRGB_TO_XYZ: Array<DoubleArray> = arrayOf(
+    private val SRGB_TO_XYZ = arrayOf(
         doubleArrayOf(0.41233895, 0.35762064, 0.18051042),
         doubleArrayOf(0.2126, 0.7152, 0.0722),
         doubleArrayOf(0.01932141, 0.11916382, 0.95034478),
@@ -167,11 +167,10 @@ internal object ColorUtils {
     @Suppress("NOTHING_TO_INLINE")
     @JvmStatic
     inline fun linearized(rgbComponent: Int): Double {
-        val normalized = rgbComponent / 255.0
-        return if (normalized <= 0.040449936) {
-            normalized / 12.92 * 100.0
+        return if (rgbComponent <= 10.31473368) {
+            rgbComponent * 0.030352698354883748
         } else {
-            ((normalized + 0.055) / 1.055).pow(2.4) * 100.0
+            100.0 * ((rgbComponent / 255.0 + 0.055) / 1.055).pow(2.4)
         }
     }
 
@@ -184,14 +183,13 @@ internal object ColorUtils {
     @Suppress("NOTHING_TO_INLINE")
     @JvmStatic
     inline fun delinearized(rgbComponent: Double): Int {
-        val normalized = rgbComponent / 100.0
         val delinearized =
-            if (normalized <= 0.0031308) {
-                normalized * 12.92
+            if (rgbComponent <= 0.31308) {
+                rgbComponent * 32.946
             } else {
-                1.055 * normalized.pow(1.0 / 2.4) - 0.055
+                269.025 * (rgbComponent / 100.0).pow(1.0 / 2.4) - 14.025
             }
-        return MathUtils.clampInt(0, 255, (delinearized * 255.0).roundToInt())
+        return MathUtils.clampInt(0, 255, delinearized.roundToInt())
     }
 
     @Suppress("NOTHING_TO_INLINE")

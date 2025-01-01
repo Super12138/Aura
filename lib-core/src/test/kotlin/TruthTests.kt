@@ -145,6 +145,21 @@ class TruthTests {
     }
 
     @Test
+    fun solveHct() {
+        val chroma = 200.0
+        val hues = (0..<360).map { it.toDouble() }
+        val tones = (0..100).map { it.toDouble() }
+        hues.forEach { hue ->
+            tones.forEach { tone ->
+                assertEquals(
+                    HctSolver.solveToInt(hue, chroma, tone),
+                    com.kyant.aura.core.hct.HctSolver.solveToInt(hue, chroma, tone)
+                )
+            }
+        }
+    }
+
+    @Test
     fun palette() {
         val contrasts = listOf(-1.0, -0.5, 0.0, 0.5, 1.0)
         val colors = listOf(0xFF6200EE.toInt(), 0x8003DAC6.toInt(), 0x000000, 0xFFFFFF, 0x808080)
