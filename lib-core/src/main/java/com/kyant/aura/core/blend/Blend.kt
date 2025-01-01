@@ -39,12 +39,12 @@ object Blend {
      */
     fun harmonize(designColor: Int, sourceColor: Int): Int {
         val fromHct = Hct(designColor)
-        val toHct = Hct(sourceColor)
-        val differenceDegrees = MathUtils.differenceDegrees(fromHct.hue, toHct.hue)
+        val toHue = Hct.hueOf(sourceColor)
+        val differenceDegrees = MathUtils.differenceDegrees(fromHct.hue, toHue)
         val rotationDegrees = min(differenceDegrees * 0.5, 15.0)
         val outputHue =
             MathUtils.sanitizeDegreesDouble(
-                fromHct.hue + rotationDegrees * MathUtils.rotationDirection(fromHct.hue, toHct.hue)
+                fromHct.hue + rotationDegrees * MathUtils.rotationDirection(fromHct.hue, toHue)
             )
         return HctSolver.solveToInt(outputHue, fromHct.chroma, fromHct.tone)
     }

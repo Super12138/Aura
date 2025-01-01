@@ -16,8 +16,6 @@
 package com.kyant.aura.core.contrast
 
 import com.kyant.aura.core.utils.ColorUtils
-import kotlin.math.abs
-import kotlin.math.max
 
 /**
  * Color science for contrast utilities.
@@ -94,9 +92,11 @@ object Contrast {
     @Suppress("NOTHING_TO_INLINE")
     @JvmStatic
     inline fun ratioOfYs(y1: Double, y2: Double): Double {
-        val lighter = max(y1, y2)
-        val darker = if (lighter == y2) y1 else y2
-        return (lighter + 5.0) / (darker + 5.0)
+        return if (y1 >= y2) {
+            (y1 + 5.0) / (y2 + 5.0)
+        } else {
+            (y2 + 5.0) / (y1 + 5.0)
+        }
     }
 
     /**
@@ -140,8 +140,8 @@ object Contrast {
             return -1.0
         }
         val realContrast = ratioOfYs(lightY, darkY)
-        val delta = abs(realContrast - ratio)
-        if (realContrast < ratio && delta > CONTRAST_RATIO_EPSILON) {
+        val delta = realContrast - ratio
+        if (delta < -CONTRAST_RATIO_EPSILON) {
             return -1.0
         }
 
@@ -189,8 +189,8 @@ object Contrast {
             return -1.0
         }
         val realContrast = ratioOfYs(lightY, darkY)
-        val delta = abs(realContrast - ratio)
-        if (realContrast < ratio && delta > CONTRAST_RATIO_EPSILON) {
+        val delta = realContrast - ratio
+        if (delta < -CONTRAST_RATIO_EPSILON) {
             return -1.0
         }
 
@@ -217,6 +217,6 @@ object Contrast {
     @JvmStatic
     inline fun darkerUnsafe(tone: Double, ratio: Double): Double {
         val darkerSafe = darker(tone, ratio)
-        return max(0.0, darkerSafe)
+        return if (darkerSafe < 0.0) 0.0 else darkerSafe
     }
 }

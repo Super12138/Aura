@@ -5,6 +5,7 @@ import com.kyant.aura.core.dynamiccolor.Variant
 import com.kyant.aura.core.hct.Hct
 
 object DynamicSchemes {
+    @JvmStatic
     fun createDynamicScheme(
         sourceColorHct: Hct,
         variant: Variant,

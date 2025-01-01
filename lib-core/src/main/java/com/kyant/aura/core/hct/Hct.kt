@@ -175,4 +175,64 @@ class Hct
     override fun toString(): String {
         return "Hct(hue=$hue, chroma=$chroma, tone=$tone)"
     }
+
+    companion object {
+        @JvmStatic
+        fun hueOf(argb: Int): Double {
+            // ===========================================================
+            // Operations inlined from Cam16 to avoid repeated calculation
+            // ===========================================================
+            val vc = DefaultViewingConditions
+
+            val linrgbR = ColorUtils.linearized(argb shr 16 and 0xFF)
+            val linrgbG = ColorUtils.linearized(argb shr 8 and 0xFF)
+            val linrgbB = ColorUtils.linearized(argb and 0xFF)
+
+            // Transform XYZ to scaled discounted illuminant
+            val rDScaled =
+                linrgbR * SCALED_DISCOUNT_FROM_LINRGB_11 +
+                        linrgbG * SCALED_DISCOUNT_FROM_LINRGB_12 +
+                        linrgbB * SCALED_DISCOUNT_FROM_LINRGB_13
+            val gDScaled =
+                linrgbR * SCALED_DISCOUNT_FROM_LINRGB_21 +
+                        linrgbG * SCALED_DISCOUNT_FROM_LINRGB_22 +
+                        linrgbB * SCALED_DISCOUNT_FROM_LINRGB_23
+            val bDScaled =
+                linrgbR * SCALED_DISCOUNT_FROM_LINRGB_31 +
+                        linrgbG * SCALED_DISCOUNT_FROM_LINRGB_32 +
+                        linrgbB * SCALED_DISCOUNT_FROM_LINRGB_33
+
+            // Chromatic adaptation
+            val rAF = rDScaled.pow(0.42)
+            val gAF = gDScaled.pow(0.42)
+            val bAF = bDScaled.pow(0.42)
+            val rA = 400.0 * rAF / (rAF + 27.13)
+            val gA = 400.0 * gAF / (gAF + 27.13)
+            val bA = 400.0 * bAF / (bAF + 27.13)
+
+            // redness-greenness
+            val a = rA - gA + (bA - gA) / 11.0
+            // yellowness-blueness
+            val b = (rA + gA - bA - bA) / 9.0
+
+            // hue
+            val atan2 = atan2(b, a)
+            val atanDegrees = Math.toDegrees(atan2)
+            val hue =
+                if (atanDegrees < 0) {
+                    atanDegrees + 360.0
+                } else {
+                    if (atanDegrees >= 360) {
+                        atanDegrees - 360.0
+                    } else {
+                        atanDegrees
+                    }
+                }
+            // ===========================================================
+            // Operations inlined from Cam16 to avoid repeated calculation
+            // ===========================================================
+
+            return hue
+        }
+    }
 }

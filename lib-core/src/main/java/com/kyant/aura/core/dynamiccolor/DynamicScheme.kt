@@ -260,6 +260,7 @@ open class DynamicScheme(
          * @param rotations      A set of hue rotations.
          * @return Color's hue with a rotation applied.
          */
+        @JvmStatic
         fun getRotatedHue(sourceColorHct: Hct, hues: DoubleArray, rotations: DoubleArray): Double {
             val sourceHue = sourceColorHct.hue
             if (rotations.size == 1) {

@@ -49,6 +49,7 @@ object Score {
      * not suitable for a theme.
      */
     @JvmOverloads
+    @JvmStatic
     fun score(
         colorsToPopulation: MutableMap<Int, Int>,
         desired: Int = 4,
@@ -79,7 +80,7 @@ object Score {
 
         // Scores each HCT color based on usage and chroma, while optionally
         // filtering out values that do not have enough chroma or usage.
-        val scoredHcts: MutableList<ScoredHCT> = mutableListOf()
+        val scoredHcts: MutableList<ScoredHCT> = ArrayList(colorsHct.size)
         for (hct in colorsHct) {
             val hue = MathUtils.sanitizeDegreesInt(hct.hue.roundToInt())
             val proportion = hueExcitedProportions[hue]

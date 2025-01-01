@@ -130,9 +130,6 @@ class TonalPalette private constructor(
                 val midMaxChroma = chromaCache.getOrPut(midTone) {
                     HctSolver.findMaxChroma(hue, midTone.toDouble())
                 }
-                val isAscending = midMaxChroma < chromaCache.getOrPut(midTone + toneStepSize) {
-                    HctSolver.findMaxChroma(hue, (midTone + toneStepSize).toDouble())
-                }
                 val sufficientChroma = midMaxChroma >= requestedChroma - epsilon
 
                 if (sufficientChroma) {
@@ -149,8 +146,12 @@ class TonalPalette private constructor(
                 } else {
                     // As there is no sufficient chroma in the midTone, follow the direction to the chroma
                     // peak.
+                    val newTone = midTone + toneStepSize
+                    val isAscending = midMaxChroma < chromaCache.getOrPut(newTone) {
+                        HctSolver.findMaxChroma(hue, newTone.toDouble())
+                    }
                     if (isAscending) {
-                        lowerTone = midTone + toneStepSize
+                        lowerTone = newTone
                     } else {
                         // Keep midTone for potential chroma peak.
                         upperTone = midTone

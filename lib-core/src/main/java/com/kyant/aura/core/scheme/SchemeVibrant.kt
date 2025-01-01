@@ -29,14 +29,8 @@ class SchemeVibrant(sourceColorHct: Hct, isDark: Boolean, contrastLevel: Double)
     isDark = isDark,
     contrastLevel = contrastLevel,
     primaryPalette = TonalPalette.fromHueAndChroma(sourceColorHct.hue, 200.0),
-    secondaryPalette = TonalPalette.fromHueAndChroma(
-        getRotatedHue(sourceColorHct, HUES, SECONDARY_ROTATIONS),
-        24.0
-    ),
-    tertiaryPalette = TonalPalette.fromHueAndChroma(
-        getRotatedHue(sourceColorHct, HUES, TERTIARY_ROTATIONS),
-        32.0
-    ),
+    secondaryPalette = TonalPalette.fromHueAndChroma(getRotatedHue(sourceColorHct, HUES, SECONDARY_ROTATIONS), 24.0),
+    tertiaryPalette = TonalPalette.fromHueAndChroma(getRotatedHue(sourceColorHct, HUES, TERTIARY_ROTATIONS), 32.0),
     neutralPalette = TonalPalette.fromHueAndChroma(sourceColorHct.hue, 10.0),
     neutralVariantPalette = TonalPalette.fromHueAndChroma(sourceColorHct.hue, 12.0)
 ) {
