@@ -64,12 +64,12 @@ val argb: Int = hct.asArgb()
 ## Benchmarks
 
 ```
-        4,176   ns          45 allocs    Trace    Method Trace    Benchmarks.googleHct
+        4,047   ns          45 allocs    Trace    Method Trace    Benchmarks.googleHct
         2,535   ns           1 allocs    Trace    Method Trace    Benchmarks.auraHct
 
-        2,339   ns          18 allocs    Trace    Method Trace    Benchmarks.googleHct2
-        1,479   ns           3 allocs    Trace    Method Trace    Benchmarks.auraHct2
+        2,333   ns          18 allocs    Trace    Method Trace    Benchmarks.googleHct2
+        1,475   ns           3 allocs    Trace    Method Trace    Benchmarks.auraHct2
 
-      506,004   ns        5831 allocs    Trace    Method Trace    Benchmarks.googlePalette
-      301,492   ns        1659 allocs    Trace    Method Trace    Benchmarks.auraPalette
+      500,317   ns        5831 allocs    Trace    Method Trace    Benchmarks.googlePalette
+      302,956   ns        1471 allocs    Trace    Method Trace    Benchmarks.auraPalette
 ```

@@ -66,4 +66,35 @@ class ContrastCurve
             else -> this.high
         }
     }
+
+    companion object {
+        val Accent = ContrastCurve(3.0, 4.5, 7.0, 7.0)
+        val OnAccent = ContrastCurve(4.5, 7.0, 11.0, 21.0)
+        val Container = ContrastCurve(1.0, 1.0, 3.0, 4.5)
+        val OnContainer = ContrastCurve(3.0, 4.5, 7.0, 11.0)
+
+        /**
+         * Returns the value at a given contrast level.
+         *
+         * @param contrastLevel The contrast level. 0.0 is the default (normal); -1.0 is the lowest; 1.0
+         * is the highest.
+         * @return The value. For contrast ratios, a number between 1.0 and 21.0.
+         */
+        @JvmStatic
+        fun get(
+            low: Double,
+            normal: Double,
+            medium: Double,
+            high: Double,
+            contrastLevel: Double
+        ): Double {
+            return when {
+                contrastLevel <= -1.0 -> low
+                contrastLevel < 0.0 -> MathUtils.lerp(low, normal, contrastLevel + 1)
+                contrastLevel < 0.5 -> MathUtils.lerp(normal, medium, contrastLevel * 2)
+                contrastLevel < 1.0 -> MathUtils.lerp(medium, high, contrastLevel * 2 - 1)
+                else -> high
+            }
+        }
+    }
 }
