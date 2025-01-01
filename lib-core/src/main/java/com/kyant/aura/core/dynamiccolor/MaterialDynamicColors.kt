@@ -23,50 +23,49 @@ import kotlin.math.abs
  * Named colors, otherwise known as tokens, or roles, in the Material Design system.
  */
 class MaterialDynamicColors {
-    fun highestSurface(s: DynamicScheme): DynamicColor {
-        return if (s.isDark) surfaceBright() else surfaceDim()
-    }
+    @Suppress("PropertyName")
+    val HighestSurface = { s: DynamicScheme -> if (s.isDark) surfaceBright() else surfaceDim() }
 
     // Compatibility Keys Colors for Android
     fun primaryPaletteKeyColor(): DynamicColor {
         return DynamicColor(
             "primary_palette_key_color",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s -> s.primaryPalette.keyColor.tone })
     }
 
     fun secondaryPaletteKeyColor(): DynamicColor {
         return DynamicColor(
             "secondary_palette_key_color",
-            { s -> s.secondaryPalette },
+            DynamicScheme.SecondaryPalette,
             { s -> s.secondaryPalette.keyColor.tone })
     }
 
     fun tertiaryPaletteKeyColor(): DynamicColor {
         return DynamicColor(
             "tertiary_palette_key_color",
-            { s -> s.tertiaryPalette },
+            DynamicScheme.TertiaryPalette,
             { s -> s.tertiaryPalette.keyColor.tone })
     }
 
     fun neutralPaletteKeyColor(): DynamicColor {
         return DynamicColor(
             "neutral_palette_key_color",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> s.neutralPalette.keyColor.tone })
     }
 
     fun neutralVariantPaletteKeyColor(): DynamicColor {
         return DynamicColor(
             "neutral_variant_palette_key_color",
-            { s -> s.neutralVariantPalette },
+            DynamicScheme.NeutralVariantPalette,
             { s -> s.neutralVariantPalette.keyColor.tone })
     }
 
     fun background(): DynamicColor {
         return DynamicColor(
             "background",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> if (s.isDark) 6.0 else 98.0 },
             isBackground = true
         )
@@ -75,7 +74,7 @@ class MaterialDynamicColors {
     fun onBackground(): DynamicColor {
         return DynamicColor(
             "on_background",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> if (s.isDark) 90.0 else 10.0 },
             background = { s -> background() },
             contrastCurve = ContrastCurve(3.0, 3.0, 4.5, 7.0)
@@ -85,7 +84,7 @@ class MaterialDynamicColors {
     fun surface(): DynamicColor {
         return DynamicColor(
             "surface",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> if (s.isDark) 6.0 else 98.0 },
             isBackground = true
         )
@@ -94,7 +93,7 @@ class MaterialDynamicColors {
     fun surfaceDim(): DynamicColor {
         return DynamicColor(
             "surface_dim",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s ->
                 if (s.isDark) 6.0
                 else ContrastCurve.get(87.0, 87.0, 80.0, 75.0, s.contrastLevel)
@@ -106,7 +105,7 @@ class MaterialDynamicColors {
     fun surfaceBright(): DynamicColor {
         return DynamicColor(
             "surface_bright",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s ->
                 if (s.isDark) ContrastCurve.get(24.0, 24.0, 29.0, 34.0, s.contrastLevel)
                 else 98.0
@@ -118,7 +117,7 @@ class MaterialDynamicColors {
     fun surfaceContainerLowest(): DynamicColor {
         return DynamicColor(
             "surface_container_lowest",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s ->
                 if (s.isDark) ContrastCurve.get(4.0, 4.0, 2.0, 0.0, s.contrastLevel)
                 else 100.0
@@ -130,7 +129,7 @@ class MaterialDynamicColors {
     fun surfaceContainerLow(): DynamicColor {
         return DynamicColor(
             "surface_container_low",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s ->
                 if (s.isDark) {
                     ContrastCurve.get(10.0, 10.0, 11.0, 12.0, s.contrastLevel)
@@ -145,7 +144,7 @@ class MaterialDynamicColors {
     fun surfaceContainer(): DynamicColor {
         return DynamicColor(
             "surface_container",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s ->
                 if (s.isDark) {
                     ContrastCurve.get(12.0, 12.0, 16.0, 20.0, s.contrastLevel)
@@ -160,7 +159,7 @@ class MaterialDynamicColors {
     fun surfaceContainerHigh(): DynamicColor {
         return DynamicColor(
             "surface_container_high",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s ->
                 if (s.isDark) {
                     ContrastCurve.get(17.0, 17.0, 21.0, 25.0, s.contrastLevel)
@@ -175,7 +174,7 @@ class MaterialDynamicColors {
     fun surfaceContainerHighest(): DynamicColor {
         return DynamicColor(
             "surface_container_highest",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s ->
                 if (s.isDark) {
                     ContrastCurve.get(22.0, 22.0, 26.0, 30.0, s.contrastLevel)
@@ -190,9 +189,9 @@ class MaterialDynamicColors {
     fun onSurface(): DynamicColor {
         return DynamicColor(
             "on_surface",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> if (s.isDark) 90.0 else 10.0 },
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.OnAccent
         )
     }
@@ -200,7 +199,7 @@ class MaterialDynamicColors {
     fun surfaceVariant(): DynamicColor {
         return DynamicColor(
             "surface_variant",
-            { s -> s.neutralVariantPalette },
+            DynamicScheme.NeutralVariantPalette,
             { s -> if (s.isDark) 30.0 else 90.0 },
             isBackground = true
         )
@@ -209,9 +208,9 @@ class MaterialDynamicColors {
     fun onSurfaceVariant(): DynamicColor {
         return DynamicColor(
             "on_surface_variant",
-            { s -> s.neutralVariantPalette },
+            DynamicScheme.NeutralVariantPalette,
             { s -> if (s.isDark) 80.0 else 30.0 },
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.OnContainer
         )
     }
@@ -219,7 +218,7 @@ class MaterialDynamicColors {
     fun inverseSurface(): DynamicColor {
         return DynamicColor(
             "inverse_surface",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> if (s.isDark) 90.0 else 20.0 }
         )
     }
@@ -227,7 +226,7 @@ class MaterialDynamicColors {
     fun inverseOnSurface(): DynamicColor {
         return DynamicColor(
             "inverse_on_surface",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> if (s.isDark) 20.0 else 95.0 },
             background = { s -> inverseSurface() },
             contrastCurve = ContrastCurve.OnAccent
@@ -237,9 +236,9 @@ class MaterialDynamicColors {
     fun outline(): DynamicColor {
         return DynamicColor(
             "outline",
-            { s -> s.neutralVariantPalette },
+            DynamicScheme.NeutralVariantPalette,
             { s -> if (s.isDark) 60.0 else 50.0 },
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve(1.5, 3.0, 4.5, 7.0)
         )
     }
@@ -247,9 +246,9 @@ class MaterialDynamicColors {
     fun outlineVariant(): DynamicColor {
         return DynamicColor(
             "outline_variant",
-            { s -> s.neutralVariantPalette },
+            DynamicScheme.NeutralVariantPalette,
             { s -> if (s.isDark) 30.0 else 80.0 },
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Container
         )
     }
@@ -257,7 +256,7 @@ class MaterialDynamicColors {
     fun shadow(): DynamicColor {
         return DynamicColor(
             "shadow",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> 0.0 }
         )
     }
@@ -265,7 +264,7 @@ class MaterialDynamicColors {
     fun scrim(): DynamicColor {
         return DynamicColor(
             "scrim",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> 0.0 }
         )
     }
@@ -273,7 +272,7 @@ class MaterialDynamicColors {
     fun surfaceTint(): DynamicColor {
         return DynamicColor(
             "surface_tint",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s -> if (s.isDark) 80.0 else 40.0 },
             isBackground = true
         )
@@ -282,7 +281,7 @@ class MaterialDynamicColors {
     fun primary(): DynamicColor {
         return DynamicColor(
             "primary",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s ->
                 if (s.isMonochrome) {
                     if (s.isDark) 100.0 else 0.0
@@ -291,7 +290,7 @@ class MaterialDynamicColors {
                 }
             },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Accent,
             toneDeltaPair = { s -> ToneDeltaPair(primaryContainer(), primary(), 10.0, TonePolarity.NEARER, false) })
     }
@@ -299,7 +298,7 @@ class MaterialDynamicColors {
     fun onPrimary(): DynamicColor {
         return DynamicColor(
             "on_primary",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s ->
                 if (s.isMonochrome) {
                     if (s.isDark) 10.0 else 90.0
@@ -315,7 +314,7 @@ class MaterialDynamicColors {
     fun primaryContainer(): DynamicColor {
         return DynamicColor(
             "primary_container",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s ->
                 if (s.isFidelity) {
                     s.sourceColorHct.tone
@@ -326,7 +325,7 @@ class MaterialDynamicColors {
                 }
             },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Container,
             toneDeltaPair = { s -> ToneDeltaPair(primaryContainer(), primary(), 10.0, TonePolarity.NEARER, false) })
     }
@@ -334,7 +333,7 @@ class MaterialDynamicColors {
     fun onPrimaryContainer(): DynamicColor {
         return DynamicColor(
             "on_primary_container",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s ->
                 if (s.isFidelity) {
                     DynamicColor.foregroundTone(primaryContainer().tone(s), 4.5)
@@ -352,7 +351,7 @@ class MaterialDynamicColors {
     fun inversePrimary(): DynamicColor {
         return DynamicColor(
             "inverse_primary",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s -> if (s.isDark) 40.0 else 80.0 },
             background = { s -> inverseSurface() },
             contrastCurve = ContrastCurve.Accent
@@ -362,10 +361,10 @@ class MaterialDynamicColors {
     fun secondary(): DynamicColor {
         return DynamicColor(
             "secondary",
-            { s -> s.secondaryPalette },
+            DynamicScheme.SecondaryPalette,
             { s -> if (s.isDark) 80.0 else 40.0 },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Accent,
             toneDeltaPair = { s -> ToneDeltaPair(secondaryContainer(), secondary(), 10.0, TonePolarity.NEARER, false) })
     }
@@ -373,7 +372,7 @@ class MaterialDynamicColors {
     fun onSecondary(): DynamicColor {
         return DynamicColor(
             "on_secondary",
-            { s -> s.secondaryPalette },
+            DynamicScheme.SecondaryPalette,
             { s ->
                 if (s.isMonochrome) {
                     if (s.isDark) 10.0 else 100.0
@@ -389,7 +388,7 @@ class MaterialDynamicColors {
     fun secondaryContainer(): DynamicColor {
         return DynamicColor(
             "secondary_container",
-            { s -> s.secondaryPalette },
+            DynamicScheme.SecondaryPalette,
             { s ->
                 val initialTone = if (s.isDark) 30.0 else 90.0
                 if (s.isMonochrome) {
@@ -401,7 +400,7 @@ class MaterialDynamicColors {
                 }
             },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Container,
             toneDeltaPair = { s -> ToneDeltaPair(secondaryContainer(), secondary(), 10.0, TonePolarity.NEARER, false) })
     }
@@ -409,7 +408,7 @@ class MaterialDynamicColors {
     fun onSecondaryContainer(): DynamicColor {
         return DynamicColor(
             "on_secondary_container",
-            { s -> s.secondaryPalette },
+            DynamicScheme.SecondaryPalette,
             { s ->
                 if (s.isMonochrome) {
                     if (s.isDark) 90.0 else 10.0
@@ -427,7 +426,7 @@ class MaterialDynamicColors {
     fun tertiary(): DynamicColor {
         return DynamicColor(
             "tertiary",
-            { s -> s.tertiaryPalette },
+            DynamicScheme.TertiaryPalette,
             { s ->
                 if (s.isMonochrome) {
                     if (s.isDark) 90.0 else 25.0
@@ -436,7 +435,7 @@ class MaterialDynamicColors {
                 }
             },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Accent,
             toneDeltaPair = { s -> ToneDeltaPair(tertiaryContainer(), tertiary(), 10.0, TonePolarity.NEARER, false) })
     }
@@ -444,7 +443,7 @@ class MaterialDynamicColors {
     fun onTertiary(): DynamicColor {
         return DynamicColor(
             "on_tertiary",
-            { s -> s.tertiaryPalette },
+            DynamicScheme.TertiaryPalette,
             { s ->
                 if (s.isMonochrome) {
                     if (s.isDark) 10.0 else 90.0
@@ -460,7 +459,7 @@ class MaterialDynamicColors {
     fun tertiaryContainer(): DynamicColor {
         return DynamicColor(
             "tertiary_container",
-            { s -> s.tertiaryPalette },
+            DynamicScheme.TertiaryPalette,
             { s ->
                 if (s.isMonochrome) {
                     if (s.isDark) 60.0 else 49.0
@@ -472,7 +471,7 @@ class MaterialDynamicColors {
                 }
             },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Container,
             toneDeltaPair = { s -> ToneDeltaPair(tertiaryContainer(), tertiary(), 10.0, TonePolarity.NEARER, false) })
     }
@@ -480,7 +479,7 @@ class MaterialDynamicColors {
     fun onTertiaryContainer(): DynamicColor {
         return DynamicColor(
             "on_tertiary_container",
-            { s -> s.tertiaryPalette },
+            DynamicScheme.TertiaryPalette,
             { s ->
                 if (s.isMonochrome) {
                     if (s.isDark) 0.0 else 100.0
@@ -498,10 +497,10 @@ class MaterialDynamicColors {
     fun error(): DynamicColor {
         return DynamicColor(
             "error",
-            { s -> s.errorPalette },
+            DynamicScheme.ErrorPalette,
             { s -> if (s.isDark) 80.0 else 40.0 },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Accent,
             toneDeltaPair = { s -> ToneDeltaPair(errorContainer(), error(), 10.0, TonePolarity.NEARER, false) })
     }
@@ -509,7 +508,7 @@ class MaterialDynamicColors {
     fun onError(): DynamicColor {
         return DynamicColor(
             "on_error",
-            { s -> s.errorPalette },
+            DynamicScheme.ErrorPalette,
             { s -> if (s.isDark) 20.0 else 100.0 },
             background = { s -> error() },
             contrastCurve = ContrastCurve.OnAccent
@@ -519,10 +518,10 @@ class MaterialDynamicColors {
     fun errorContainer(): DynamicColor {
         return DynamicColor(
             "error_container",
-            { s -> s.errorPalette },
+            DynamicScheme.ErrorPalette,
             { s -> if (s.isDark) 30.0 else 90.0 },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Container,
             toneDeltaPair = { s -> ToneDeltaPair(errorContainer(), error(), 10.0, TonePolarity.NEARER, false) })
     }
@@ -530,7 +529,7 @@ class MaterialDynamicColors {
     fun onErrorContainer(): DynamicColor {
         return DynamicColor(
             "on_error_container",
-            { s -> s.errorPalette },
+            DynamicScheme.ErrorPalette,
             { s ->
                 if (s.isMonochrome) {
                     if (s.isDark) 90.0 else 10.0
@@ -546,10 +545,10 @@ class MaterialDynamicColors {
     fun primaryFixed(): DynamicColor {
         return DynamicColor(
             "primary_fixed",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s -> if (s.isMonochrome) 40.0 else 90.0 },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Container,
             toneDeltaPair = { s -> ToneDeltaPair(primaryFixed(), primaryFixedDim(), 10.0, TonePolarity.LIGHTER, true) })
     }
@@ -557,10 +556,10 @@ class MaterialDynamicColors {
     fun primaryFixedDim(): DynamicColor {
         return DynamicColor(
             "primary_fixed_dim",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s -> if (s.isMonochrome) 30.0 else 80.0 },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Container,
             toneDeltaPair = { s -> ToneDeltaPair(primaryFixed(), primaryFixedDim(), 10.0, TonePolarity.LIGHTER, true) })
     }
@@ -568,7 +567,7 @@ class MaterialDynamicColors {
     fun onPrimaryFixed(): DynamicColor {
         return DynamicColor(
             "on_primary_fixed",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s -> if (s.isMonochrome) 100.0 else 10.0 },
             background = { s -> primaryFixedDim() },
             secondBackground = { s -> primaryFixed() },
@@ -579,7 +578,7 @@ class MaterialDynamicColors {
     fun onPrimaryFixedVariant(): DynamicColor {
         return DynamicColor(
             "on_primary_fixed_variant",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s -> if (s.isMonochrome) 90.0 else 30.0 },
             background = { s -> primaryFixedDim() },
             secondBackground = { s -> primaryFixed() },
@@ -590,10 +589,10 @@ class MaterialDynamicColors {
     fun secondaryFixed(): DynamicColor {
         return DynamicColor(
             "secondary_fixed",
-            { s -> s.secondaryPalette },
+            DynamicScheme.SecondaryPalette,
             { s -> if (s.isMonochrome) 80.0 else 90.0 },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Container,
             toneDeltaPair = { s ->
                 ToneDeltaPair(secondaryFixed(), secondaryFixedDim(), 10.0, TonePolarity.LIGHTER, true)
@@ -603,10 +602,10 @@ class MaterialDynamicColors {
     fun secondaryFixedDim(): DynamicColor {
         return DynamicColor(
             "secondary_fixed_dim",
-            { s -> s.secondaryPalette },
+            DynamicScheme.SecondaryPalette,
             { s -> if (s.isMonochrome) 70.0 else 80.0 },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Container,
             toneDeltaPair = { s ->
                 ToneDeltaPair(secondaryFixed(), secondaryFixedDim(), 10.0, TonePolarity.LIGHTER, true)
@@ -616,7 +615,7 @@ class MaterialDynamicColors {
     fun onSecondaryFixed(): DynamicColor {
         return DynamicColor(
             "on_secondary_fixed",
-            { s -> s.secondaryPalette },
+            DynamicScheme.SecondaryPalette,
             { s -> 10.0 },
             background = { s -> secondaryFixedDim() },
             secondBackground = { s -> secondaryFixed() },
@@ -627,7 +626,7 @@ class MaterialDynamicColors {
     fun onSecondaryFixedVariant(): DynamicColor {
         return DynamicColor(
             "on_secondary_fixed_variant",
-            { s -> s.secondaryPalette },
+            DynamicScheme.SecondaryPalette,
             { s -> if (s.isMonochrome) 25.0 else 30.0 },
             background = { s -> secondaryFixedDim() },
             secondBackground = { s -> secondaryFixed() },
@@ -638,10 +637,10 @@ class MaterialDynamicColors {
     fun tertiaryFixed(): DynamicColor {
         return DynamicColor(
             "tertiary_fixed",
-            { s -> s.tertiaryPalette },
+            DynamicScheme.TertiaryPalette,
             { s -> if (s.isMonochrome) 40.0 else 90.0 },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Container,
             toneDeltaPair = { s ->
                 ToneDeltaPair(tertiaryFixed(), tertiaryFixedDim(), 10.0, TonePolarity.LIGHTER, true)
@@ -651,10 +650,10 @@ class MaterialDynamicColors {
     fun tertiaryFixedDim(): DynamicColor {
         return DynamicColor(
             "tertiary_fixed_dim",
-            { s -> s.tertiaryPalette },
+            DynamicScheme.TertiaryPalette,
             { s -> if (s.isMonochrome) 30.0 else 80.0 },
             isBackground = true,
-            background = { s: DynamicScheme -> this.highestSurface(s) },
+            background = HighestSurface,
             contrastCurve = ContrastCurve.Container,
             toneDeltaPair = { s ->
                 ToneDeltaPair(tertiaryFixed(), tertiaryFixedDim(), 10.0, TonePolarity.LIGHTER, true)
@@ -664,7 +663,7 @@ class MaterialDynamicColors {
     fun onTertiaryFixed(): DynamicColor {
         return DynamicColor(
             "on_tertiary_fixed",
-            { s -> s.tertiaryPalette },
+            DynamicScheme.TertiaryPalette,
             { s -> if (s.isMonochrome) 100.0 else 10.0 },
             background = { s -> tertiaryFixedDim() },
             secondBackground = { s -> tertiaryFixed() },
@@ -675,7 +674,7 @@ class MaterialDynamicColors {
     fun onTertiaryFixedVariant(): DynamicColor {
         return DynamicColor(
             "on_tertiary_fixed_variant",
-            { s -> s.tertiaryPalette },
+            DynamicScheme.TertiaryPalette,
             { s -> if (s.isMonochrome) 90.0 else 30.0 },
             background = { s -> tertiaryFixedDim() },
             secondBackground = { s -> tertiaryFixed() },
@@ -700,7 +699,7 @@ class MaterialDynamicColors {
     fun controlActivated(): DynamicColor {
         return DynamicColor(
             "control_activated",
-            { s -> s.primaryPalette },
+            DynamicScheme.PrimaryPalette,
             { s -> if (s.isDark) 30.0 else 90.0 })
     }
 
@@ -710,7 +709,7 @@ class MaterialDynamicColors {
     fun controlNormal(): DynamicColor {
         return DynamicColor(
             "control_normal",
-            { s -> s.neutralVariantPalette },
+            DynamicScheme.NeutralVariantPalette,
             { s -> if (s.isDark) 80.0 else 30.0 })
     }
 
@@ -725,7 +724,7 @@ class MaterialDynamicColors {
     fun controlHighlight(): DynamicColor {
         return DynamicColor(
             "control_highlight",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> if (s.isDark) 100.0 else 0.0 },
             opacity = { s -> if (s.isDark) 0.20 else 0.12 })
     }
@@ -734,7 +733,7 @@ class MaterialDynamicColors {
     fun textPrimaryInverse(): DynamicColor {
         return DynamicColor(
             "text_primary_inverse",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> if (s.isDark) 10.0 else 90.0 })
     }
 
@@ -743,7 +742,7 @@ class MaterialDynamicColors {
     fun textSecondaryAndTertiaryInverse(): DynamicColor {
         return DynamicColor(
             "text_secondary_and_tertiary_inverse",
-            { s -> s.neutralVariantPalette },
+            DynamicScheme.NeutralVariantPalette,
             { s -> if (s.isDark) 30.0 else 80.0 })
     }
 
@@ -751,7 +750,7 @@ class MaterialDynamicColors {
     fun textPrimaryInverseDisableOnly(): DynamicColor {
         return DynamicColor(
             "text_primary_inverse_disable_only",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> if (s.isDark) 10.0 else 90.0 })
     }
 
@@ -760,7 +759,7 @@ class MaterialDynamicColors {
     fun textSecondaryAndTertiaryInverseDisabled(): DynamicColor {
         return DynamicColor(
             "text_secondary_and_tertiary_inverse_disabled",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> if (s.isDark) 10.0 else 90.0 })
     }
 
@@ -768,7 +767,7 @@ class MaterialDynamicColors {
     fun textHintInverse(): DynamicColor {
         return DynamicColor(
             "text_hint_inverse",
-            { s -> s.neutralPalette },
+            DynamicScheme.NeutralPalette,
             { s -> if (s.isDark) 10.0 else 90.0 })
     }
 

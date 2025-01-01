@@ -243,6 +243,13 @@ open class DynamicScheme(
         get() = getArgb(dynamicColors.textHintInverse())
 
     companion object {
+        val PrimaryPalette = { s: DynamicScheme -> s.primaryPalette }
+        val SecondaryPalette = { s: DynamicScheme -> s.secondaryPalette }
+        val TertiaryPalette = { s: DynamicScheme -> s.tertiaryPalette }
+        val NeutralPalette = { s: DynamicScheme -> s.neutralPalette }
+        val NeutralVariantPalette = { s: DynamicScheme -> s.neutralVariantPalette }
+        val ErrorPalette = { s: DynamicScheme -> s.errorPalette }
+
         /**
          * Given a set of hues and set of hue rotations, locate which hues the source color's hue is
          * between, apply the rotation at the same index as the first hue in the range, and return the

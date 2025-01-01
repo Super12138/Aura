@@ -1141,7 +1141,7 @@ internal object HctSolver {
      * @return The desired color as a hexadecimal integer, if found; null otherwise.
      */
     @JvmStatic
-    private fun findResultByJ(hueRadians: Double, chroma: Double, y: Double): Int? {
+    private fun findResultByJ(hueRadians: Double, chroma: Double, y: Double): Int {
         // Initial estimate of j.
         var j = sqrt(y) * 11.0
         // ===========================================================
@@ -1192,15 +1192,15 @@ internal object HctSolver {
             // Operations inlined from Cam16 to avoid repeated calculation
             // ===========================================================
             if (linrgbR < 0 || linrgbG < 0 || linrgbB < 0) {
-                return null
+                return -1
             }
             val fnj = Y_FROM_LINRGB_R * linrgbR + Y_FROM_LINRGB_G * linrgbG + Y_FROM_LINRGB_B * linrgbB
             if (fnj <= 0) {
-                return null
+                return -1
             }
             if (iterationRound == 4 || abs(fnj - y) < 0.002) {
                 if (linrgbR > 100.01 || linrgbG > 100.01 || linrgbB > 100.01) {
-                    return null
+                    return -1
                 }
                 return ColorUtils.argbFromLinrgb(linrgbR, linrgbG, linrgbB)
             }
@@ -1208,7 +1208,7 @@ internal object HctSolver {
             // Using 2 * fn(j) / j as the approximation of fn'(j)
             j -= (fnj - y) * j / (2 * fnj)
         }
-        return null
+        return -1
     }
 
     /**
@@ -1230,7 +1230,10 @@ internal object HctSolver {
         val hueRadians = Math.toRadians(sanitizedHueDegrees)
         val y = ColorUtils.yFromLstar(lstar)
         val exactAnswer = findResultByJ(hueRadians, chroma, y)
-        return exactAnswer ?: bisectToLimit(y, hueRadians)
+        if (exactAnswer != -1) {
+            return exactAnswer
+        }
+        return bisectToLimit(y, hueRadians)
     }
 
     @JvmStatic
