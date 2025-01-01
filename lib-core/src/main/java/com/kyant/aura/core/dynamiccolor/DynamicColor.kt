@@ -243,17 +243,6 @@ class DynamicColor
 
             val desiredRatio = contrastCurve!!.get(scheme.contrastLevel)
 
-            if (Contrast.ratioOfTones(bgTone, answer) >= desiredRatio) {
-                // Don't "improve" what's good enough.
-            } else {
-                // Rough improvement.
-                answer = foregroundTone(bgTone, desiredRatio)
-            }
-
-            if (decreasingContrast) {
-                answer = foregroundTone(bgTone, desiredRatio)
-            }
-
             if (isBackground && 50 <= answer && answer < 60) {
                 // Must adjust
                 answer = if (Contrast.ratioOfTones(49.0, bgTone) >= desiredRatio) {
@@ -261,6 +250,13 @@ class DynamicColor
                 } else {
                     60.0
                 }
+            } else if (decreasingContrast) {
+                answer = foregroundTone(bgTone, desiredRatio)
+            } else if (Contrast.ratioOfTones(bgTone, answer) >= desiredRatio) {
+                // Don't "improve" what's good enough.
+            } else {
+                // Rough improvement.
+                answer = foregroundTone(bgTone, desiredRatio)
             }
 
             if (secondBackground != null) {
@@ -282,27 +278,22 @@ class DynamicColor
                 // or -1 if such ratio cannot be reached.
                 val lightOption = Contrast.lighter(upper, desiredRatio)
 
-                // The lightest dark tone that satisfies the desired ratio,
-                // or -1 if such ratio cannot be reached.
-                val darkOption = Contrast.darker(lower, desiredRatio)
-
-                // Tones suitable for the foreground.
-                val availables = ArrayList<Double>()
-                if (lightOption != -1.0) {
-                    availables.add(lightOption)
-                }
-                if (darkOption != -1.0) {
-                    availables.add(darkOption)
-                }
-
                 val prefersLight = tonePrefersLightForeground(bgTone1) || tonePrefersLightForeground(bgTone2)
                 if (prefersLight) {
                     return if (lightOption == -1.0) 100.0 else lightOption
                 }
-                if (availables.size == 1) {
-                    return availables[0]
+
+                // The lightest dark tone that satisfies the desired ratio,
+                // or -1 if such ratio cannot be reached.
+                val darkOption = Contrast.darker(lower, desiredRatio)
+
+                return if (darkOption != -1.0) {
+                    darkOption
+                } else if (lightOption != -1.0) {
+                    lightOption
+                } else {
+                    0.0
                 }
-                return if (darkOption == -1.0) 0.0 else darkOption
             }
 
             return answer
@@ -357,7 +348,11 @@ class DynamicColor
                     darkerTone
                 }
             } else {
-                return if (darkerRatio >= ratio || darkerRatio >= lighterRatio) darkerTone else lighterTone
+                return if (darkerRatio >= ratio || darkerRatio >= lighterRatio) {
+                    darkerTone
+                } else {
+                    lighterTone
+                }
             }
         }
 

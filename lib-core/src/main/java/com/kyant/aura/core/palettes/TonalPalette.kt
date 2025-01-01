@@ -39,8 +39,6 @@ class TonalPalette private constructor(
      */
     val keyColor: Hct
 ) {
-    private val cache: MutableMap<Int, Int> = HashMap()
-
     /**
      * Create an ARGB color with HCT hue and chroma of this Tones instance, and the provided HCT tone.
      *
@@ -48,9 +46,7 @@ class TonalPalette private constructor(
      * @return ARGB representation of a color with that tone.
      */
     fun tone(tone: Int): Int {
-        return cache.getOrPut(tone) {
-            HctSolver.solveToInt(this.hue, this.chroma, tone.toDouble())
-        }
+        return HctSolver.solveToInt(this.hue, this.chroma, tone.toDouble())
     }
 
     /**
