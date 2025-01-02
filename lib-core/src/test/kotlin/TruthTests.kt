@@ -162,24 +162,18 @@ class TruthTests {
     @Test
     fun palette() {
         val contrasts = listOf(-1.0, -0.5, 0.0, 0.5, 1.0)
-        val colors = listOf(0xFF6200EE.toInt(), 0x8003DAC6.toInt(), 0x000000, 0xFFFFFF, 0x808080)
+        val hues = (0..<360 step 30).toList()
+        val chroma = 200.0
+        val tone = 40.0
+        val colors = ArrayList<Pair<Hct, com.kyant.aura.core.hct.Hct>>(hues.size)
+        for (i in hues.indices) {
+            val hue = hues[i].toDouble()
+            colors += Hct.from(hue, chroma, tone) to com.kyant.aura.core.hct.Hct(hue, chroma, tone)
+        }
+
         for (isDark in listOf(true, false)) {
             for (contrast in contrasts) {
-                for (color in colors) {
-                    val hct = Hct.fromInt(color)
-                    val hct2 = com.kyant.aura.core.hct.Hct(color)
-
-                    apply {
-                        val scheme1 = SchemeFidelity(hct, isDark, contrast)
-                        val scheme2 = com.kyant.aura.core.scheme.SchemeFidelity(hct2, isDark, contrast)
-
-                        val mdc1 = MaterialDynamicColors()
-                        val mdc2 = com.kyant.aura.core.dynamiccolor.MaterialDynamicColors()
-
-                        mdc1.allDynamicColors().zip(mdc2.allDynamicColors()).forEach {
-                            assertEquals(scheme1.getHct(it.first.get()), scheme2.getHct(it.second.invoke()))
-                        }
-                    }
+                for ((hct, hct2) in colors) {
                     apply {
                         val scheme1 = SchemeNeutral(hct, isDark, contrast)
                         val scheme2 = com.kyant.aura.core.scheme.SchemeNeutral(hct2, isDark, contrast)

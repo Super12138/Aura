@@ -15,6 +15,7 @@
  */
 package com.kyant.aura.core.scheme
 
+import com.kyant.aura.core.dislike.DislikeAnalyzer.fixIfDisliked
 import com.kyant.aura.core.dynamiccolor.DynamicScheme
 import com.kyant.aura.core.dynamiccolor.Variant
 import com.kyant.aura.core.hct.Hct
@@ -44,7 +45,7 @@ class SchemeFidelity(sourceColorHct: Hct, isDark: Boolean, contrastLevel: Double
         sourceColorHct.hue,
         max(sourceColorHct.chroma - 32.0, sourceColorHct.chroma * 0.5)
     ),
-    tertiaryPalette = TonalPalette.fromHct(TemperatureCache(sourceColorHct).getComplement()),
+    tertiaryPalette = TonalPalette.fromHct(TemperatureCache(sourceColorHct).getComplement().fixIfDisliked()),
     neutralPalette = TonalPalette.fromHueAndChroma(sourceColorHct.hue, sourceColorHct.chroma / 8.0),
     neutralVariantPalette = TonalPalette.fromHueAndChroma(sourceColorHct.hue, (sourceColorHct.chroma / 8.0) + 4.0)
 )
