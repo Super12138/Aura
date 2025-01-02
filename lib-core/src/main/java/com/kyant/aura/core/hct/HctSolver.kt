@@ -1217,9 +1217,13 @@ internal object HctSolver {
                 return 0
             }
             val fnj = Y_FROM_LINRGB_R * linrgbR + Y_FROM_LINRGB_G * linrgbG + Y_FROM_LINRGB_B * linrgbB
+            /*
+            Actually, (1) V (2) V (3) V (4) => (1) V (2) V (3).
+            fnj is always positive, so we don't need to check it here.
             if (fnj <= 0) {
                 return 0
             }
+             */
             if (iterationRound == 4 || abs(fnj - y) < 0.002) {
                 if (linrgbR > 100.01 || linrgbG > 100.01 || linrgbB > 100.01) {
                     return 0
