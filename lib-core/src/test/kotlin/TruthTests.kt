@@ -10,6 +10,7 @@ import com.kyant.m3color.scheme.SchemeNeutral
 import com.kyant.m3color.scheme.SchemeRainbow
 import com.kyant.m3color.scheme.SchemeTonalSpot
 import com.kyant.m3color.scheme.SchemeVibrant
+import com.kyant.m3color.score.Score
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -265,6 +266,28 @@ class TruthTests {
                 }
             }
         }
+    }
+
+    @Test
+    fun score() {
+        val colorsToPopulation = mapOf(
+            0xff8b_1d99.toInt() to 54,
+            0xff27_effe.toInt() to 43,
+            0xff6f_558d.toInt() to 2,
+            0xff77_fdf2.toInt() to 78
+        )
+
+        val ranked = Score.score(colorsToPopulation, 4, 0, true)
+        assertEquals(ranked.size, 3)
+        assertEquals(ranked[0], 0xff27_effe.toInt())
+        assertEquals(ranked[1], 0xff8b_1d99.toInt())
+        assertEquals(ranked[2], 0xff6f_558d.toInt())
+
+        val ranked2 = com.kyant.aura.core.score.Score.score(colorsToPopulation, 4, true)
+        assertEquals(ranked2.size, 3)
+        assertEquals(ranked2[0], 0xff27_effe.toInt())
+        assertEquals(ranked2[1], 0xff8b_1d99.toInt())
+        assertEquals(ranked2[2], 0xff6f_558d.toInt())
     }
 
     private fun assertEquals(a: Hct, b: com.kyant.aura.core.hct.Hct) {

@@ -51,7 +51,7 @@ object Score {
     @JvmOverloads
     @JvmStatic
     fun score(
-        colorsToPopulation: MutableMap<Int, Int>,
+        colorsToPopulation: Map<Int, Int>,
         desired: Int = 4,
         filter: Boolean = true
     ): List<Int> {
