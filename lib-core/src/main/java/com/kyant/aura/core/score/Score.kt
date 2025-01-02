@@ -95,7 +95,7 @@ object Score {
             scoredHcts.add(ScoredHCT(hct, score))
         }
         // Sorted so that colors with higher scores come first.
-        scoredHcts.sortByDescending { hct -> hct.score }
+        scoredHcts.sortDescending()
 
         // Iterates through potential hue differences in degrees in order to select
         // the colors with the largest distribution of hues possible. Starting at
@@ -130,5 +130,9 @@ object Score {
     private class ScoredHCT(
         val hct: Hct,
         val score: Double
-    )
+    ) : Comparable<ScoredHCT> {
+        override fun compareTo(other: ScoredHCT): Int {
+            return score.compareTo(other.score)
+        }
+    }
 }
