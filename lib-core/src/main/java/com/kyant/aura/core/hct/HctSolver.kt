@@ -1223,7 +1223,7 @@ internal object HctSolver {
             if (fnj <= 0) {
                 return 0
             }
-             */
+            */
             if (iterationRound == 4 || abs(fnj - y) < 0.002) {
                 if (linrgbR > 100.01 || linrgbG > 100.01 || linrgbB > 100.01) {
                     return 0
