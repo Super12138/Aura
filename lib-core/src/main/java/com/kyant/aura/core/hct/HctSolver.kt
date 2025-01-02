@@ -43,7 +43,6 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.hypot
-import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -1138,7 +1137,7 @@ internal object HctSolver {
      * @param hueRadians The desired hue in radians.
      * @param chroma     The desired chroma.
      * @param y          The desired Y.
-     * @return The desired color as a hexadecimal integer, if found; null otherwise.
+     * @return The desired color as a hexadecimal integer, if found; 0 otherwise.
      */
     @JvmStatic
     private fun findResultByJ(hueRadians: Double, chroma: Double, y: Double): Int {
@@ -1148,7 +1147,6 @@ internal object HctSolver {
         // Operations inlined from Cam16 to avoid repeated calculation
         // ===========================================================
         val vc = DefaultViewingConditions
-        val tInnerCoeff = 1 / vc.alphaCoeff
         val eHueScaled = cos(hueRadians + 2.0) + 3.8
         val p1 = 12500.0 / 13.0 * vc.ncb * eHueScaled
         val hSin = sin(hueRadians)
@@ -1159,7 +1157,7 @@ internal object HctSolver {
             // ===========================================================
             val jNormalized = j / 100.0
             val alpha = chroma / sqrt(jNormalized)
-            val t = (alpha * tInnerCoeff).pow(1.0 / 0.9)
+            val t = (alpha / vc.alphaCoeff).pow(1.0 / 0.9)
             val p2 = vc.aw / vc.nbb * jNormalized.pow(1.0 / vc.c / vc.z)
             val gamma = 23.0 * (p2 + 0.305) * t / (23.0 * p1 + 11.0 * t * hCos + 108.0 * t * hSin)
             val a = gamma * hCos
@@ -1167,15 +1165,39 @@ internal object HctSolver {
             val rA = (460.0 * p2 + 451.0 * a + 288.0 * b) / 1403.0
             val gA = (460.0 * p2 - 891.0 * a - 261.0 * b) / 1403.0
             val bA = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0
-            val rAAbs = abs(rA)
-            val gAAbs = abs(gA)
-            val bAAbs = abs(bA)
-            val rCBase = max(0.0, (27.13 * rAAbs) / (400.0 - rAAbs))
-            val gCBase = max(0.0, (27.13 * gAAbs) / (400.0 - gAAbs))
-            val bCBase = max(0.0, (27.13 * bAAbs) / (400.0 - bAAbs))
-            val rCScaled = MathUtils.signum(rA) * rCBase.pow(1.0 / 0.42)
-            val gCScaled = MathUtils.signum(gA) * gCBase.pow(1.0 / 0.42)
-            val bCScaled = MathUtils.signum(bA) * bCBase.pow(1.0 / 0.42)
+            /*
+            According to the code below:
+            if (linrgbR < 0 || linrgbG < 0 || linrgbB < 0) {
+                return 0
+            }
+            val fnj = Y_FROM_LINRGB_R * linrgbR + Y_FROM_LINRGB_G * linrgbG + Y_FROM_LINRGB_B * linrgbB
+            if (fnj <= 0) {
+                return 0
+            }
+
+            We have:
+            x = rCScaled; y = gCScaled; z = bCScaled
+
+            (1) linrgbR = 1373.2198709594231 * x - 1100.4251190754821 * y - 7.278681089101213 * z < 0
+            (2) linrgbG = -271.815969077903  * x + 559.6580465940733  * y - 32.46047482791194 * z < 0
+            (3) linrgbB = 1.9622899599665666 * x - 57.173814538844006 * y + 308.7233197812385 * z < 0
+            (4) fnj     = 97.6854408165668   * x + 162.18910519892916 * y - 2.473355508260113 * z <=0
+
+            (1) V (2) V (3) V (4)
+              => x < 0 V y < 0 V z < 0
+              <=> rA < 0 V gA < 0 V bA < 0
+
+            So we check rA, gA and bA here.
+            */
+            if (rA < 0 || gA < 0 || bA < 0) {
+                return 0
+            }
+            val rCBase = (27.13 * rA) / (400.0 - rA)
+            val gCBase = (27.13 * gA) / (400.0 - gA)
+            val bCBase = (27.13 * bA) / (400.0 - bA)
+            val rCScaled = rCBase.pow(1.0 / 0.42)
+            val gCScaled = gCBase.pow(1.0 / 0.42)
+            val bCScaled = bCBase.pow(1.0 / 0.42)
             val linrgbR =
                 rCScaled * LINRGB_FROM_SCALED_DISCOUNT_11 +
                         gCScaled * LINRGB_FROM_SCALED_DISCOUNT_12 +
@@ -1192,15 +1214,15 @@ internal object HctSolver {
             // Operations inlined from Cam16 to avoid repeated calculation
             // ===========================================================
             if (linrgbR < 0 || linrgbG < 0 || linrgbB < 0) {
-                return -1
+                return 0
             }
             val fnj = Y_FROM_LINRGB_R * linrgbR + Y_FROM_LINRGB_G * linrgbG + Y_FROM_LINRGB_B * linrgbB
             if (fnj <= 0) {
-                return -1
+                return 0
             }
             if (iterationRound == 4 || abs(fnj - y) < 0.002) {
                 if (linrgbR > 100.01 || linrgbG > 100.01 || linrgbB > 100.01) {
-                    return -1
+                    return 0
                 }
                 return ColorUtils.argbFromLinrgb(linrgbR, linrgbG, linrgbB)
             }
@@ -1208,7 +1230,7 @@ internal object HctSolver {
             // Using 2 * fn(j) / j as the approximation of fn'(j)
             j -= (fnj - y) * j / (2 * fnj)
         }
-        return -1
+        return 0
     }
 
     /**
@@ -1230,7 +1252,7 @@ internal object HctSolver {
         val hueRadians = Math.toRadians(sanitizedHueDegrees)
         val y = ColorUtils.yFromLstar(lstar)
         val exactAnswer = findResultByJ(hueRadians, chroma, y)
-        if (exactAnswer != -1) {
+        if (exactAnswer != 0) {
             return exactAnswer
         }
         return bisectToLimit(y, hueRadians)
