@@ -32,6 +32,11 @@ internal object ColorUtils {
         doubleArrayOf(0.2126, 0.7152, 0.0722),
         doubleArrayOf(0.01932141, 0.11916382, 0.95034478),
     )
+    private val XYZ_TO_SRGB = arrayOf(
+        doubleArrayOf(3.2413774792388685, -1.5376652402851851, -0.49885366846268053),
+        doubleArrayOf(-0.9691452513005321, 1.8758853451067872, 0.04156585616912061),
+        doubleArrayOf(0.05562093689691305, -0.20395524564742123, 1.0571799111220335),
+    )
     private const val WHITE_POINT_D65_X = 95.047
     private const val WHITE_POINT_D65_Y = 100.0
     private const val WHITE_POINT_D65_Z = 108.883
@@ -61,6 +66,29 @@ internal object ColorUtils {
         val r = delinearized(linrgbR)
         val g = delinearized(linrgbG)
         val b = delinearized(linrgbB)
+        return argbFromRgb(r, g, b)
+    }
+
+    /**
+     * Converts a color represented in Lab color space into an ARGB integer.
+     */
+    @JvmStatic
+    fun argbFromLab(l: Double, a: Double, b: Double): Int {
+        val fy = (l + 16.0) / 116.0
+        val fx = a / 500.0 + fy
+        val fz = fy - b / 200.0
+        val xNormalized = labInvf(fx)
+        val yNormalized = labInvf(fy)
+        val zNormalized = labInvf(fz)
+        val x = xNormalized * WHITE_POINT_D65_X
+        val y = yNormalized * WHITE_POINT_D65_Y
+        val z = zNormalized * WHITE_POINT_D65_Z
+        val linearR = XYZ_TO_SRGB[0][0] * x + XYZ_TO_SRGB[0][1] * y + XYZ_TO_SRGB[0][2] * z
+        val linearG = XYZ_TO_SRGB[1][0] * x + XYZ_TO_SRGB[1][1] * y + XYZ_TO_SRGB[1][2] * z
+        val linearB = XYZ_TO_SRGB[2][0] * x + XYZ_TO_SRGB[2][1] * y + XYZ_TO_SRGB[2][2] * z
+        val r = delinearized(linearR)
+        val g = delinearized(linearG)
+        val b = delinearized(linearB)
         return argbFromRgb(r, g, b)
     }
 
