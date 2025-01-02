@@ -43,8 +43,9 @@ internal object MathUtils {
      *
      * @return start if amount = 0 and stop if amount = 1
      */
+    @Suppress("NOTHING_TO_INLINE")
     @JvmStatic
-    fun lerp(start: Double, stop: Double, amount: Double): Double {
+    inline fun lerp(start: Double, stop: Double, amount: Double): Double {
         return (1.0 - amount) * start + amount * stop
     }
 
@@ -122,8 +123,9 @@ internal object MathUtils {
      * @return -1 if decreasing from leads to the shortest travel distance, 1 if increasing from leads
      * to the shortest travel distance.
      */
+    @Suppress("NOTHING_TO_INLINE")
     @JvmStatic
-    fun rotationDirection(from: Double, to: Double): Double {
+    inline fun rotationDirection(from: Double, to: Double): Double {
         val increasingDifference = sanitizeDegreesDouble(to - from)
         return if (increasingDifference <= 180.0) 1.0 else -1.0
     }
@@ -131,8 +133,9 @@ internal object MathUtils {
     /**
      * Distance of two points on a circle, represented using degrees.
      */
+    @Suppress("NOTHING_TO_INLINE")
     @JvmStatic
-    fun differenceDegrees(a: Double, b: Double): Double {
+    inline fun differenceDegrees(a: Double, b: Double): Double {
         return 180.0 - abs(abs(a - b) - 180.0)
     }
 }

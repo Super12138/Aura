@@ -22,18 +22,20 @@ import com.kyant.aura.core.utils.ColorUtils.labFromArgb
  * Provides conversions needed for K-Means quantization. Converting input to points, and converting
  * the final state of the K-Means algorithm to colors.
  */
-class PointProviderLab : PointProvider {
+object CieLab {
     /**
      * Convert a color represented in ARGB to a 3-element array of L*a*b* coordinates of the color.
      */
-    override fun fromInt(argb: Int): DoubleArray {
+    @JvmStatic
+    fun fromInt(argb: Int): DoubleArray {
         return labFromArgb(argb)
     }
 
     /**
      * Convert a 3-element array to a color represented in ARGB.
      */
-    override fun toInt(lab: DoubleArray): Int {
+    @JvmStatic
+    fun toInt(lab: DoubleArray): Int {
         return argbFromLab(lab[0], lab[1], lab[2])
     }
 
@@ -46,7 +48,8 @@ class PointProviderLab : PointProvider {
      * This relatively minor optimization is helpful because this method is called at least once
      * for each pixel in an image.
      */
-    override fun distance(one: DoubleArray, two: DoubleArray): Double {
+    @JvmStatic
+    fun distance(one: DoubleArray, two: DoubleArray): Double {
         val dL = one[0] - two[0]
         val dA = one[1] - two[1]
         val dB = one[2] - two[2]

@@ -18,6 +18,7 @@ package com.kyant.aura.core.quantize
 /**
  * Represents result of a quantizer run
  */
-class QuantizerResult internal constructor(
-    @JvmField val colorToCount: MutableMap<Int, Int>
+@JvmInline
+value class QuantizerResult internal constructor(
+    @JvmField val colorToCount: Map<Int, Int>
 )

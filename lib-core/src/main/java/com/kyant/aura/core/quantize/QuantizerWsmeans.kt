@@ -15,11 +15,10 @@
  */
 package com.kyant.aura.core.quantize
 
-import java.util.Arrays
-import java.util.Random
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 /**
  * An image quantizer that improves on the speed of a standard K-Means algorithm by implementing
@@ -51,21 +50,22 @@ object QuantizerWsmeans {
      * @return Map with keys of colors in ARGB format, values of how many of the input pixels belong
      * to the color.
      */
-    fun quantize(inputPixels: IntArray, startingClusters: IntArray, maxColors: Int): MutableMap<Int, Int> {
+    @Suppress("UNCHECKED_CAST")
+    @JvmStatic
+    fun quantize(inputPixels: IntArray, startingClusters: IntArray, maxColors: Int): Map<Int, Int> {
         // Uses a seeded random number generator to ensure consistent results.
         val random = Random(0x42688)
 
-        val pixelToCount: MutableMap<Int, Int> = LinkedHashMap<Int, Int>()
+        val pixelToCount: MutableMap<Int, Int> = LinkedHashMap()
         val points: Array<DoubleArray> = arrayOfNulls<DoubleArray>(inputPixels.size) as Array<DoubleArray>
         val pixels = IntArray(inputPixels.size)
-        val pointProvider: PointProvider = PointProviderLab()
 
         var pointCount = 0
         for (i in inputPixels.indices) {
             val inputPixel = inputPixels[i]
             val pixelCount = pixelToCount[inputPixel]
             if (pixelCount == null) {
-                points[pointCount] = pointProvider.fromInt(inputPixel)
+                points[pointCount] = CieLab.fromInt(inputPixel)
                 pixels[pointCount] = inputPixel
                 pointCount++
 
@@ -75,22 +75,16 @@ object QuantizerWsmeans {
             }
         }
 
-        val counts = IntArray(pointCount)
-        for (i in 0..<pointCount) {
-            val pixel = pixels[i]
-            counts[i] = pixelToCount.getValue(pixel)
-        }
-
-        var clusterCount = min(maxColors.toDouble(), pointCount.toDouble()).toInt()
-        if (startingClusters.isNotEmpty()) {
-            clusterCount = min(clusterCount.toDouble(), startingClusters.size.toDouble()).toInt()
-        }
+        val clusterCount =
+            if (startingClusters.isNotEmpty()) {
+                minOf(maxColors, pointCount, startingClusters.size)
+            } else {
+                min(maxColors, pointCount)
+            }
 
         val clusters: Array<DoubleArray> = arrayOfNulls<DoubleArray>(clusterCount) as Array<DoubleArray>
-        var clustersCreated = 0
         for (i in startingClusters.indices) {
-            clusters[i] = pointProvider.fromInt(startingClusters[i])
-            clustersCreated++
+            clusters[i] = CieLab.fromInt(startingClusters[i])
         }
 
         val clusterIndices = IntArray(pointCount)
@@ -98,34 +92,24 @@ object QuantizerWsmeans {
             clusterIndices[i] = random.nextInt(clusterCount)
         }
 
-        val indexMatrix: Array<IntArray> = arrayOfNulls<IntArray>(clusterCount) as Array<IntArray>
-        for (i in 0..<clusterCount) {
-            indexMatrix[i] = IntArray(clusterCount)
-        }
-
         val distanceToIndexMatrix: Array<Array<Distance>> =
-            arrayOfNulls<Array<Distance>>(clusterCount) as Array<Array<Distance>>
-        for (i in 0..<clusterCount) {
-            distanceToIndexMatrix[i] = arrayOfNulls<Distance>(clusterCount) as Array<Distance>
-            for (j in 0..<clusterCount) {
-                distanceToIndexMatrix[i][j] = Distance()
+            Array(clusterCount) {
+                Array(clusterCount) {
+                    Distance()
+                }
             }
-        }
 
         val pixelCountSums = IntArray(clusterCount)
         for (iteration in 0..<MAX_ITERATIONS) {
             for (i in 0..<clusterCount) {
                 for (j in i + 1..<clusterCount) {
-                    val distance = pointProvider.distance(clusters[i], clusters[j])
+                    val distance = CieLab.distance(clusters[i], clusters[j])
                     distanceToIndexMatrix[j][i].distance = distance
                     distanceToIndexMatrix[j][i].index = i
                     distanceToIndexMatrix[i][j].distance = distance
                     distanceToIndexMatrix[i][j].index = j
                 }
-                Arrays.sort(distanceToIndexMatrix[i])
-                for (j in 0..<clusterCount) {
-                    indexMatrix[i][j] = distanceToIndexMatrix[i][j].index
-                }
+                distanceToIndexMatrix[i].sort()
             }
 
             var pointsMoved = 0
@@ -133,7 +117,7 @@ object QuantizerWsmeans {
                 val point = points[i]
                 val previousClusterIndex = clusterIndices[i]
                 val previousCluster = clusters[previousClusterIndex]
-                val previousDistance = pointProvider.distance(point, previousCluster)
+                val previousDistance = CieLab.distance(point, previousCluster)
 
                 var minimumDistance = previousDistance
                 var newClusterIndex = -1
@@ -141,7 +125,7 @@ object QuantizerWsmeans {
                     if (distanceToIndexMatrix[previousClusterIndex][j].distance >= 4 * previousDistance) {
                         continue
                     }
-                    val distance = pointProvider.distance(point, clusters[j])
+                    val distance = CieLab.distance(point, clusters[j])
                     if (distance < minimumDistance) {
                         minimumDistance = distance
                         newClusterIndex = j
@@ -163,15 +147,14 @@ object QuantizerWsmeans {
             val componentASums = DoubleArray(clusterCount)
             val componentBSums = DoubleArray(clusterCount)
             val componentCSums = DoubleArray(clusterCount)
-            Arrays.fill(pixelCountSums, 0)
             for (i in 0..<pointCount) {
                 val clusterIndex = clusterIndices[i]
                 val point = points[i]
-                val count = counts[i]
+                val count = pixelToCount.getValue(pixels[i])
                 pixelCountSums[clusterIndex] += count
-                componentASums[clusterIndex] += (point[0] * count)
-                componentBSums[clusterIndex] += (point[1] * count)
-                componentCSums[clusterIndex] += (point[2] * count)
+                componentASums[clusterIndex] += point[0] * count
+                componentBSums[clusterIndex] += point[1] * count
+                componentCSums[clusterIndex] += point[2] * count
             }
 
             for (i in 0..<clusterCount) {
@@ -189,14 +172,14 @@ object QuantizerWsmeans {
             }
         }
 
-        val argbToPopulation: MutableMap<Int, Int> = LinkedHashMap<Int, Int>()
+        val argbToPopulation: MutableMap<Int, Int> = LinkedHashMap()
         for (i in 0..<clusterCount) {
             val count = pixelCountSums[i]
             if (count == 0) {
                 continue
             }
 
-            val possibleNewCluster = pointProvider.toInt(clusters[i])
+            val possibleNewCluster = CieLab.toInt(clusters[i])
             if (argbToPopulation.containsKey(possibleNewCluster)) {
                 continue
             }
