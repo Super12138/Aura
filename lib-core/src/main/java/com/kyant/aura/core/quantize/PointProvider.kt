@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.kyant.aura.core.quantize;
+package com.kyant.aura.core.quantize
 
 /**
  * An interface to allow use of different color spaces by quantizers.
  */
-public interface PointProvider {
+interface PointProvider {
     /**
      * The four components in the color space of an sRGB color.
      */
-    public double[] fromInt(int argb);
+    fun fromInt(argb: Int): DoubleArray
 
     /**
      * The ARGB (i.e. hex code) representation of this color.
      */
-    public int toInt(double[] point);
+    fun toInt(point: DoubleArray): Int
 
     /**
      * Squared distance between two colors. Distance is defined by scientific color spaces and
      * referred to as delta E.
      */
-    public double distance(double[] a, double[] b);
+    fun distance(a: DoubleArray, b: DoubleArray): Double
 }

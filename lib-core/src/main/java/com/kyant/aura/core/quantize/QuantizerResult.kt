@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.kyant.aura.core.quantize;
-
-import java.util.Map;
+package com.kyant.aura.core.quantize
 
 /**
  * Represents result of a quantizer run
  */
-public final class QuantizerResult {
-    public final Map<Integer, Integer> colorToCount;
-
-    QuantizerResult(Map<Integer, Integer> colorToCount) {
-        this.colorToCount = colorToCount;
-    }
-}
+class QuantizerResult internal constructor(
+    @JvmField val colorToCount: MutableMap<Int, Int>
+)
