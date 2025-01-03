@@ -55,27 +55,48 @@ class TemperatureCache
     private val warmestTemp: Double
 
     init {
-        val hcts: MutableList<Hct> = ArrayList(362)
+        val tempsByHct = HashMap<Hct, Double>(362)
+        val hcts: MutableList<Hct> = ArrayList(361)
         val chroma = input.chroma
         val tone = input.tone
         var hue = 0.0
+        var coldestTemp = Double.MAX_VALUE
+        var coldest = input
+        var warmestTemp = Double.MIN_VALUE
+        var warmest = input
         while (hue <= 360.0) {
             val colorAtHue = Hct(hue, chroma, tone)
             hcts.add(colorAtHue)
+            val temp = rawTemperature(colorAtHue)
+            tempsByHct[colorAtHue] = temp
+            if (temp < coldestTemp) {
+                coldestTemp = temp
+                coldest = colorAtHue
+            }
+            if (temp > warmestTemp) {
+                warmestTemp = temp
+                warmest = colorAtHue
+            }
             hue += 1.0
         }
         hctsByHue = hcts
 
-        hcts.add(input)
-
-        tempsByHct = hcts.associateWith { hct -> rawTemperature(hct) }
-
-        val hctsByTemp = hcts.sortedBy { hct -> tempsByHct.getValue(hct) }
-        coldest = hctsByTemp.first()
-        warmest = hctsByTemp.last()
-        tempRange = tempsByHct.getValue(warmest) - tempsByHct.getValue(coldest)
-        coldestTemp = tempsByHct.getValue(coldest)
-        warmestTemp = tempsByHct.getValue(warmest)
+        val inputTemp = rawTemperature(input)
+        tempsByHct[input] = inputTemp
+        if (inputTemp < coldestTemp) {
+            coldestTemp = inputTemp
+            coldest = input
+        }
+        if (inputTemp > warmestTemp) {
+            warmestTemp = inputTemp
+            warmest = input
+        }
+        this.tempsByHct = tempsByHct
+        this.coldest = coldest
+        this.warmest = warmest
+        this.coldestTemp = coldestTemp
+        this.warmestTemp = warmestTemp
+        tempRange = warmestTemp - coldestTemp
     }
 
     /**

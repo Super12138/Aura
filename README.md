@@ -74,11 +74,11 @@ val argb: Int = hct.asArgb()
       219,272   ns        1022 allocs    auraPalette
 
     2,809,882   ns       27627 allocs    googleFidelityPalette
-    1,709,904   ns        2112 allocs    auraFidelityPalette
-    
+    1,613,048   ns        2103 allocs    auraFidelityPalette
+
       734,548   ns         504 allocs    googleQuantize
       809,711   ns         492 allocs    auraQuantize
-    
+
       852,304   ns        1227 allocs    googleQuantize2
       902,532   ns        1097 allocs    auraQuantize2
 ```
