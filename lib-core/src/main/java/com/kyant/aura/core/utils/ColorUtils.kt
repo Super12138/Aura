@@ -27,16 +27,26 @@ import kotlin.math.roundToInt
  * CAM16.
  */
 internal object ColorUtils {
-    val SRGB_TO_XYZ = arrayOf(
-        doubleArrayOf(0.41233895, 0.35762064, 0.18051042),
-        doubleArrayOf(0.2126, 0.7152, 0.0722),
-        doubleArrayOf(0.01932141, 0.11916382, 0.95034478),
-    )
-    val XYZ_TO_SRGB = arrayOf(
-        doubleArrayOf(3.2413774792388685, -1.5376652402851851, -0.49885366846268053),
-        doubleArrayOf(-0.9691452513005321, 1.8758853451067872, 0.04156585616912061),
-        doubleArrayOf(0.05562093689691305, -0.20395524564742123, 1.0571799111220335),
-    )
+    const val SRGB_TO_XYZ_11 = 0.41233895
+    const val SRGB_TO_XYZ_12 = 0.35762064
+    const val SRGB_TO_XYZ_13 = 0.18051042
+    const val SRGB_TO_XYZ_21 = 0.2126
+    const val SRGB_TO_XYZ_22 = 0.7152
+    const val SRGB_TO_XYZ_23 = 0.0722
+    const val SRGB_TO_XYZ_31 = 0.01932141
+    const val SRGB_TO_XYZ_32 = 0.11916382
+    const val SRGB_TO_XYZ_33 = 0.95034478
+
+    const val XYZ_TO_SRGB_11 = 3.2413774792388685
+    const val XYZ_TO_SRGB_12 = -1.5376652402851851
+    const val XYZ_TO_SRGB_13 = -0.49885366846268053
+    const val XYZ_TO_SRGB_21 = -0.9691452513005321
+    const val XYZ_TO_SRGB_22 = 1.8758853451067872
+    const val XYZ_TO_SRGB_23 = 0.04156585616912061
+    const val XYZ_TO_SRGB_31 = 0.05562093689691305
+    const val XYZ_TO_SRGB_32 = -0.20395524564742123
+    const val XYZ_TO_SRGB_33 = 1.0571799111220335
+
     const val WHITE_POINT_D65_X = 95.047
     const val WHITE_POINT_D65_Y = 100.0
     const val WHITE_POINT_D65_Z = 108.883
@@ -83,9 +93,9 @@ internal object ColorUtils {
         val x = xNormalized * WHITE_POINT_D65_X
         val y = yNormalized * WHITE_POINT_D65_Y
         val z = zNormalized * WHITE_POINT_D65_Z
-        val linearR = XYZ_TO_SRGB[0][0] * x + XYZ_TO_SRGB[0][1] * y + XYZ_TO_SRGB[0][2] * z
-        val linearG = XYZ_TO_SRGB[1][0] * x + XYZ_TO_SRGB[1][1] * y + XYZ_TO_SRGB[1][2] * z
-        val linearB = XYZ_TO_SRGB[2][0] * x + XYZ_TO_SRGB[2][1] * y + XYZ_TO_SRGB[2][2] * z
+        val linearR = XYZ_TO_SRGB_11 * x + XYZ_TO_SRGB_12 * y + XYZ_TO_SRGB_13 * z
+        val linearG = XYZ_TO_SRGB_21 * x + XYZ_TO_SRGB_22 * y + XYZ_TO_SRGB_23 * z
+        val linearB = XYZ_TO_SRGB_31 * x + XYZ_TO_SRGB_32 * y + XYZ_TO_SRGB_33 * z
         val r = delinearized(linearR)
         val g = delinearized(linearG)
         val b = delinearized(linearB)
@@ -100,15 +110,12 @@ internal object ColorUtils {
      */
     @JvmStatic
     fun labFromArgb(argb: Int): DoubleArray {
-        // ===========================================================
-        // Operations inlined from C to avoid repeated calculation
-        // ===========================================================
         val linearR = linearized(argb shr 16 and 0xFF)
         val linearG = linearized(argb shr 8 and 0xFF)
         val linearB = linearized(argb and 0xFF)
-        val x = SRGB_TO_XYZ[0][0] * linearR + SRGB_TO_XYZ[0][1] * linearG + SRGB_TO_XYZ[0][2] * linearB
-        val y = SRGB_TO_XYZ[1][0] * linearR + SRGB_TO_XYZ[1][1] * linearG + SRGB_TO_XYZ[1][2] * linearB
-        val z = SRGB_TO_XYZ[2][0] * linearR + SRGB_TO_XYZ[2][1] * linearG + SRGB_TO_XYZ[2][2] * linearB
+        val x = SRGB_TO_XYZ_11 * linearR + SRGB_TO_XYZ_12 * linearG + SRGB_TO_XYZ_13 * linearB
+        val y = SRGB_TO_XYZ_21 * linearR + SRGB_TO_XYZ_22 * linearG + SRGB_TO_XYZ_23 * linearB
+        val z = SRGB_TO_XYZ_31 * linearR + SRGB_TO_XYZ_32 * linearG + SRGB_TO_XYZ_33 * linearB
         val xNormalized = x / WHITE_POINT_D65_X
         val yNormalized = y / WHITE_POINT_D65_Y
         val zNormalized = z / WHITE_POINT_D65_Z

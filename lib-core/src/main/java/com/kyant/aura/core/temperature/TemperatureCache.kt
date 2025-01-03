@@ -17,7 +17,15 @@ package com.kyant.aura.core.temperature
 
 import com.kyant.aura.core.hct.Hct
 import com.kyant.aura.core.hct.HctSolver
-import com.kyant.aura.core.utils.ColorUtils.SRGB_TO_XYZ
+import com.kyant.aura.core.utils.ColorUtils.SRGB_TO_XYZ_11
+import com.kyant.aura.core.utils.ColorUtils.SRGB_TO_XYZ_12
+import com.kyant.aura.core.utils.ColorUtils.SRGB_TO_XYZ_13
+import com.kyant.aura.core.utils.ColorUtils.SRGB_TO_XYZ_21
+import com.kyant.aura.core.utils.ColorUtils.SRGB_TO_XYZ_22
+import com.kyant.aura.core.utils.ColorUtils.SRGB_TO_XYZ_23
+import com.kyant.aura.core.utils.ColorUtils.SRGB_TO_XYZ_31
+import com.kyant.aura.core.utils.ColorUtils.SRGB_TO_XYZ_32
+import com.kyant.aura.core.utils.ColorUtils.SRGB_TO_XYZ_33
 import com.kyant.aura.core.utils.ColorUtils.WHITE_POINT_D65_X
 import com.kyant.aura.core.utils.ColorUtils.WHITE_POINT_D65_Y
 import com.kyant.aura.core.utils.ColorUtils.WHITE_POINT_D65_Z
@@ -286,9 +294,9 @@ class TemperatureCache
             val linearR = linearized(argb shr 16 and 0xFF)
             val linearG = linearized(argb shr 8 and 0xFF)
             val linearB = linearized(argb and 0xFF)
-            val x = SRGB_TO_XYZ[0][0] * linearR + SRGB_TO_XYZ[0][1] * linearG + SRGB_TO_XYZ[0][2] * linearB
-            val y = SRGB_TO_XYZ[1][0] * linearR + SRGB_TO_XYZ[1][1] * linearG + SRGB_TO_XYZ[1][2] * linearB
-            val z = SRGB_TO_XYZ[2][0] * linearR + SRGB_TO_XYZ[2][1] * linearG + SRGB_TO_XYZ[2][2] * linearB
+            val x = SRGB_TO_XYZ_11 * linearR + SRGB_TO_XYZ_12 * linearG + SRGB_TO_XYZ_13 * linearB
+            val y = SRGB_TO_XYZ_21 * linearR + SRGB_TO_XYZ_22 * linearG + SRGB_TO_XYZ_23 * linearB
+            val z = SRGB_TO_XYZ_31 * linearR + SRGB_TO_XYZ_32 * linearG + SRGB_TO_XYZ_33 * linearB
             val xNormalized = x / WHITE_POINT_D65_X
             val yNormalized = y / WHITE_POINT_D65_Y
             val zNormalized = z / WHITE_POINT_D65_Z
