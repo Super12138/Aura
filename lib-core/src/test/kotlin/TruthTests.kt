@@ -296,9 +296,6 @@ class TruthTests {
     fun quantize() {
         val red = 0xffff_0000.toInt()
         val green = 0xff00_ff00.toInt()
-        val blue = 0xff00_00ff.toInt()
-        val white = 0xffff_ffff.toInt()
-        val random = 0xff42_6088.toInt()
         val maxColors = 256
 
         val result = QuantizerCelebi.quantize(intArrayOf(red, red, green, green, green), maxColors)
