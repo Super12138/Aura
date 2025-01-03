@@ -34,7 +34,6 @@ import com.kyant.aura.core.utils.MathUtils
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
-import kotlin.math.floor
 import kotlin.math.hypot
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -58,34 +57,44 @@ class TemperatureCache
     private val tempsByHct: Map<Hct, Double>
     private val coldestTemp: Double
     private val warmestTemp: Double
-    private val tempRange: Double
     private val coldestHue: Double
     private val warmestHue: Double
+    private val tempRange: Double
 
     init {
-        val hcts: MutableList<Hct> = ArrayList(362)
+        val hctsByHue = ArrayList<Hct>(361)
+        val tempsByHct = HashMap<Hct, Double>(362)
+        val inputTemp = rawTemperature(input.asArgb())
+        tempsByHct[input] = inputTemp
+        var coldestTemp = inputTemp
+        var warmestTemp = inputTemp
+        var coldestHue = input.hue
+        var warmestHue = input.hue
         val chroma = input.chroma
         val tone = input.tone
         var hue = 0.0
         while (hue <= 360.0) {
             val colorAtHue = Hct(hue, chroma, tone)
-            hcts.add(colorAtHue)
+            hctsByHue.add(colorAtHue)
+            val temp = rawTemperature(colorAtHue.asArgb())
+            tempsByHct[colorAtHue] = temp
+            if (temp < coldestTemp) {
+                coldestTemp = temp
+                coldestHue = colorAtHue.hue
+            }
+            if (temp > warmestTemp) {
+                warmestTemp = temp
+                warmestHue = colorAtHue.hue
+            }
             hue += 1.0
         }
-        hctsByHue = hcts
-
-        hcts.add(input)
-
-        tempsByHct = hcts.associateWith { hct -> rawTemperature(hct.asArgb()) }
-
-        val hctsByTemp = hcts.sortedBy { hct -> tempsByHct.getValue(hct) }
-        val coldest = hctsByTemp.first()
-        val warmest = hctsByTemp.last()
-        coldestHue = coldest.hue
-        warmestHue = warmest.hue
-        coldestTemp = tempsByHct.getValue(coldest)
-        warmestTemp = tempsByHct.getValue(warmest)
-        tempRange = warmestTemp - coldestTemp
+        this.hctsByHue = hctsByHue
+        this.tempsByHct = tempsByHct
+        this.coldestTemp = coldestTemp
+        this.warmestTemp = warmestTemp
+        this.coldestHue = coldestHue
+        this.warmestHue = warmestHue
+        this.tempRange = warmestTemp - coldestTemp
     }
 
     /**
@@ -106,11 +115,11 @@ class TemperatureCache
         val complementRelativeTemp = 1.0 - getRelativeTemperature(input)
         // Find the color in the other section, closest to the inverse percentile
         // of the input color. This is the complement.
-        var hueAddend = 0.0
-        while (hueAddend <= 360.0) {
+        var hueAddend = 0
+        while (hueAddend <= 360) {
             val hue = MathUtils.sanitizeDegreesDouble(startHue + directionOfRotation * hueAddend)
             if (!isBetween(hue, startHue, endHue)) {
-                hueAddend += 1.0
+                hueAddend += 1
                 continue
             }
             val possibleAnswer = hctsByHue[hue.roundToInt()]
@@ -120,7 +129,7 @@ class TemperatureCache
                 smallestError = error
                 answer = possibleAnswer
             }
-            hueAddend += 1.0
+            hueAddend += 1
         }
         return answer
     }
@@ -177,7 +186,7 @@ class TemperatureCache
             val tempDelta = abs(temp - lastTemp)
             totalTempDelta += tempDelta
 
-            var desiredTotalTempDeltaForIndex = (allColors.size * tempStep)
+            var desiredTotalTempDeltaForIndex = allColors.size * tempStep
             var indexSatisfied = totalTempDelta >= desiredTotalTempDeltaForIndex
             var indexAddend = 1
             // Keep adding this hue to the answers until its temperature is
@@ -208,7 +217,7 @@ class TemperatureCache
         val answers: MutableList<Hct> = ArrayList(count)
         answers.add(input)
 
-        val ccwCount = floor((count.toDouble() - 1.0) / 2.0).toInt()
+        val ccwCount = (count - 1) / 2
         for (i in 1..ccwCount) {
             var index = -i
             while (index < 0) {
@@ -297,10 +306,11 @@ class TemperatureCache
          */
         @JvmStatic
         private fun isBetween(angle: Double, a: Double, b: Double): Boolean {
-            if (a < b) {
-                return a <= angle && angle <= b
+            return if (a < b) {
+                a <= angle && angle <= b
+            } else {
+                a <= angle || angle <= b
             }
-            return a <= angle || angle <= b
         }
     }
 }
