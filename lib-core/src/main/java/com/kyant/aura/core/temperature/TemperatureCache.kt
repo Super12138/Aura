@@ -16,6 +16,7 @@
 package com.kyant.aura.core.temperature
 
 import com.kyant.aura.core.hct.Hct
+import com.kyant.aura.core.hct.HctSolver
 import com.kyant.aura.core.utils.ColorUtils.SRGB_TO_XYZ
 import com.kyant.aura.core.utils.ColorUtils.WHITE_POINT_D65_X
 import com.kyant.aura.core.utils.ColorUtils.WHITE_POINT_D65_Y
@@ -26,7 +27,6 @@ import com.kyant.aura.core.utils.MathUtils
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
-import kotlin.math.floor
 import kotlin.math.hypot
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -46,57 +46,54 @@ class TemperatureCache
  * and chroma as the input color, modulo any restrictions due to the other hues having lower
  * limits on chroma.
  */(private val input: Hct) {
-    private val hctsByHue: List<Hct>
-    private val tempsByHct: Map<Hct, Double>
-    private val coldest: Hct
-    private val warmest: Hct
-    private val tempRange: Double
+    private val inputHue = input.hue.roundToInt()
+    private val tempsByHue: DoubleArray
     private val coldestTemp: Double
     private val warmestTemp: Double
+    private val tempRange: Double
+    private val coldestHue: Int
+    private val warmestHue: Int
 
     init {
-        val tempsByHct = HashMap<Hct, Double>(362)
-        val hcts: MutableList<Hct> = ArrayList(361)
+        val tempsByHue = DoubleArray(361)
         val chroma = input.chroma
         val tone = input.tone
-        var hue = 0.0
+        var hue = 0
         var coldestTemp = Double.MAX_VALUE
-        var coldest = input
+        var coldestHue = inputHue
         var warmestTemp = Double.MIN_VALUE
-        var warmest = input
-        while (hue <= 360.0) {
-            val colorAtHue = Hct(hue, chroma, tone)
-            hcts.add(colorAtHue)
+        var warmestHue = inputHue
+        while (hue <= 360) {
+            val colorAtHue = HctSolver.solveToInt(hue.toDouble(), chroma, tone)
             val temp = rawTemperature(colorAtHue)
-            tempsByHct[colorAtHue] = temp
+            tempsByHue[hue] = temp
             if (temp < coldestTemp) {
                 coldestTemp = temp
-                coldest = colorAtHue
+                coldestHue = hue
             }
             if (temp > warmestTemp) {
                 warmestTemp = temp
-                warmest = colorAtHue
+                warmestHue = hue
             }
-            hue += 1.0
+            hue += 1
         }
-        hctsByHue = hcts
 
-        val inputTemp = rawTemperature(input)
-        tempsByHct[input] = inputTemp
+        val inputTemp = rawTemperature(input.asArgb())
+        tempsByHue[inputHue] = inputTemp
         if (inputTemp < coldestTemp) {
             coldestTemp = inputTemp
-            coldest = input
+            coldestHue = inputHue
         }
         if (inputTemp > warmestTemp) {
             warmestTemp = inputTemp
-            warmest = input
+            warmestHue = inputHue
         }
-        this.tempsByHct = tempsByHct
-        this.coldest = coldest
-        this.warmest = warmest
+        this.tempsByHue = tempsByHue
         this.coldestTemp = coldestTemp
         this.warmestTemp = warmestTemp
-        tempRange = warmestTemp - coldestTemp
+        this.tempRange = warmestTemp - coldestTemp
+        this.coldestHue = coldestHue
+        this.warmestHue = warmestHue
     }
 
     /**
@@ -107,35 +104,31 @@ class TemperatureCache
      * intent as a color that is just as cool-warm as the input color is warm-cool.
      */
     fun getComplement(): Hct {
-        val coldestHue = coldest.hue
-        val warmestHue = warmest.hue
-        val startHueIsColdestToWarmest = isBetween(input.hue, coldestHue, warmestHue)
+        val startHueIsColdestToWarmest = isBetween(inputHue, coldestHue, warmestHue)
         val startHue = if (startHueIsColdestToWarmest) warmestHue else coldestHue
         val endHue = if (startHueIsColdestToWarmest) coldestHue else warmestHue
-        val directionOfRotation = 1.0
         var smallestError = 1000.0
-        var answer = hctsByHue[input.hue.roundToInt()]
+        var answer = inputHue
 
-        val complementRelativeTemp = 1.0 - getRelativeTemperature(input)
+        val complementRelativeTemp = 1.0 - getRelativeTemperature(inputHue)
         // Find the color in the other section, closest to the inverse percentile
         // of the input color. This is the complement.
-        var hueAddend = 0.0
-        while (hueAddend <= 360.0) {
-            val hue = MathUtils.sanitizeDegreesDouble(startHue + directionOfRotation * hueAddend)
+        var hueAddend = 0
+        while (hueAddend <= 360) {
+            val hue = MathUtils.sanitizeDegreesInt(startHue + hueAddend)
             if (!isBetween(hue, startHue, endHue)) {
-                hueAddend += 1.0
+                hueAddend += 1
                 continue
             }
-            val possibleAnswer = hctsByHue[hue.roundToInt()]
-            val relativeTemp = (tempsByHct.getValue(possibleAnswer) - coldestTemp) / tempRange
+            val relativeTemp = (tempsByHue[hue] - coldestTemp) / tempRange
             val error = abs(complementRelativeTemp - relativeTemp)
             if (error < smallestError) {
                 smallestError = error
-                answer = possibleAnswer
+                answer = hue
             }
-            hueAddend += 1.0
+            hueAddend += 1
         }
-        return answer
+        return input.copy(hue = answer.toDouble())
     }
 
     /**
@@ -161,19 +154,27 @@ class TemperatureCache
      * @param divisions The number of divisions on the color wheel.
      */
     fun getAnalogousColors(count: Int, divisions: Int): List<Hct> {
-        // The starting hue is the hue of the input color.
-        val startHue = input.hue.roundToInt()
-        val startHct = hctsByHue[startHue]
-        var lastTemp = getRelativeTemperature(startHct)
+        val hues = getAnalogousHues(count, divisions)
+        return hues.map { input.copy(hue = it.toDouble()) }
+    }
 
-        val allColors: MutableList<Hct> = ArrayList(divisions)
-        allColors.add(startHct)
+    fun getAnalogousColorAt(count: Int, divisions: Int, index: Int): Hct {
+        val hues = getAnalogousHues(count, divisions)
+        return input.copy(hue = hues[index].toDouble())
+    }
+
+    private fun getAnalogousHues(count: Int, divisions: Int): List<Int> {
+        // The starting hue is the hue of the input color.
+        val startHue = inputHue
+        var lastTemp = getRelativeTemperature(startHue)
+
+        val allColors: MutableList<Int> = ArrayList(divisions)
+        allColors.add(startHue)
 
         var absoluteTotalTempDelta = 0.0
         for (i in 0..359) {
             val hue = MathUtils.sanitizeDegreesInt(startHue + i)
-            val hct = hctsByHue[hue]
-            val temp = getRelativeTemperature(hct)
+            val temp = getRelativeTemperature(hue)
             val tempDelta = abs(temp - lastTemp)
             lastTemp = temp
             absoluteTotalTempDelta += tempDelta
@@ -182,15 +183,14 @@ class TemperatureCache
         var hueAddend = 1
         val tempStep = absoluteTotalTempDelta / divisions.toDouble()
         var totalTempDelta = 0.0
-        lastTemp = getRelativeTemperature(startHct)
+        lastTemp = getRelativeTemperature(startHue)
         while (allColors.size < divisions) {
             val hue = MathUtils.sanitizeDegreesInt(startHue + hueAddend)
-            val hct = hctsByHue[hue]
-            val temp = getRelativeTemperature(hct)
+            val temp = getRelativeTemperature(hue)
             val tempDelta = abs(temp - lastTemp)
             totalTempDelta += tempDelta
 
-            var desiredTotalTempDeltaForIndex = (allColors.size * tempStep)
+            var desiredTotalTempDeltaForIndex = allColors.size * tempStep
             var indexSatisfied = totalTempDelta >= desiredTotalTempDeltaForIndex
             var indexAddend = 1
             // Keep adding this hue to the answers until its temperature is
@@ -202,7 +202,7 @@ class TemperatureCache
             // colors at T100/T0. Therefore, they should just be added to the array
             // as answers.
             while (indexSatisfied && allColors.size < divisions) {
-                allColors.add(hct)
+                allColors.add(hue)
                 desiredTotalTempDeltaForIndex = (allColors.size + indexAddend) * tempStep
                 indexSatisfied = totalTempDelta >= desiredTotalTempDeltaForIndex
                 indexAddend++
@@ -212,16 +212,16 @@ class TemperatureCache
 
             if (hueAddend > 360) {
                 while (allColors.size < divisions) {
-                    allColors.add(hct)
+                    allColors.add(hue)
                 }
                 break
             }
         }
 
-        val answers: MutableList<Hct> = ArrayList(count)
-        answers.add(input)
+        val answers: MutableList<Int> = ArrayList(count)
+        answers.add(inputHue)
 
-        val ccwCount = floor((count.toDouble() - 1.0) / 2.0).toInt()
+        val ccwCount = (count - 1) / 2
         for (i in 1..ccwCount) {
             var index = -i
             while (index < 0) {
@@ -248,16 +248,16 @@ class TemperatureCache
     /**
      * Temperature relative to all colors with the same chroma and tone.
      *
-     * @param hct HCT to find the relative temperature of.
+     * @param hue Hue to find the relative temperature of.
      * @return Value on a scale from 0 to 1.
      */
-    fun getRelativeTemperature(hct: Hct): Double {
+    fun getRelativeTemperature(hue: Int): Double {
         // Handle when there's no difference in temperature between warmest and
         // coldest: for example, at T100, only one color is available, white.
         if (tempRange == 0.0) {
             return 0.5
         }
-        val differenceFromColdest = tempsByHct.getValue(hct) - coldestTemp
+        val differenceFromColdest = tempsByHue[hue] - coldestTemp
         return differenceFromColdest / tempRange
     }
 
@@ -279,8 +279,7 @@ class TemperatureCache
          * - Upper bound: 8.61. Chroma is infinite. Assuming max of Lab chroma 130.
          */
         @JvmStatic
-        fun rawTemperature(color: Hct): Double {
-            val argb = color.asArgb()
+        fun rawTemperature(argb: Int): Double {
             // ============================================================================
             // Operations inlined from ColorUtils.labFromArgb to avoid repeated calculation
             // ============================================================================
@@ -310,11 +309,12 @@ class TemperatureCache
          * Determines if an angle is between two other angles, rotating clockwise.
          */
         @JvmStatic
-        private fun isBetween(angle: Double, a: Double, b: Double): Boolean {
-            if (a < b) {
-                return a <= angle && angle <= b
+        private fun isBetween(angle: Int, a: Int, b: Int): Boolean {
+            return if (a < b) {
+                a <= angle && angle <= b
+            } else {
+                a <= angle || angle <= b
             }
-            return a <= angle || angle <= b
         }
     }
 }

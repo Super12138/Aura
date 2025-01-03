@@ -60,18 +60,6 @@ class Benchmarks {
     }
 
     @Test
-    fun googleFidelityPalette() {
-        benchmarkRule.measureRepeated {
-            val scheme = SchemeFidelity(Hct.fromInt(0x6200EE), false, 0.5)
-            val mdc = MaterialDynamicColors()
-            val colors = mdc.allDynamicColors()
-            for (i in colors.indices) {
-                scheme.getHct(colors[i].get())
-            }
-        }
-    }
-
-    @Test
     fun auraPalette() {
         benchmarkRule.measureRepeated {
             val scheme = com.kyant.aura.core.scheme.SchemeExpressive(com.kyant.aura.core.hct.Hct(0x6200EE), false, 0.5)
@@ -79,6 +67,18 @@ class Benchmarks {
             val colors = mdc.allDynamicColors()
             for (i in colors.indices) {
                 scheme.getHct(colors[i].invoke())
+            }
+        }
+    }
+
+    @Test
+    fun googleFidelityPalette() {
+        benchmarkRule.measureRepeated {
+            val scheme = SchemeFidelity(Hct.fromInt(0x6200EE), false, 0.5)
+            val mdc = MaterialDynamicColors()
+            val colors = mdc.allDynamicColors()
+            for (i in colors.indices) {
+                scheme.getHct(colors[i].get())
             }
         }
     }
