@@ -24,3 +24,5 @@ rootProject.name = "Aura"
 include(":app")
 include(":lib-core")
 include(":benchmark")
+include(":lib-compose")
+include(":lib-views")

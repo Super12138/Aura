@@ -13,6 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.kyant.aura.compose.AuraMaterialTheme
+import com.kyant.aura.compose.AuraSchemeOptions
 
 class ComposeColorSchemeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

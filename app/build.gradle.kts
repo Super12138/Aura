@@ -73,7 +73,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":lib-core"))
+    implementation(project(":lib-compose"))
+    implementation(project(":lib-views"))
     implementation("com.google.android.material:material:1.13.0-alpha09")
 
     val composeBom = platform("androidx.compose:compose-bom:2024.12.01")

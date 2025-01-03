@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastRoundToInt
+import com.kyant.aura.compose.AuraSchemeOptions
 import com.kyant.aura.core.dynamiccolor.MaterialDynamicColors
 import com.kyant.aura.core.dynamiccolor.Variant
 import com.kyant.aura.core.hct.Hct

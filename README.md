@@ -12,21 +12,32 @@ APIs are unavailable yet.
 ## Jetpack Compose usage
 
 ```kotlin
-AuraMaterialTheme(
-    schemeOptions = AuraSchemeOptions.Default/*.copy(
-        sourceColor = sourceColor,
-        variant = Variant.TONAL_SPOT,
-        isDark = isDark,
-        contrastLevel = 0.0f,
-    )*/
-) {
+val schemeOptions = AuraSchemeOptions.Default/*.copy(
+    sourceColor = sourceColor,
+    variant = Variant.TONAL_SPOT,
+    isDark = isDark,
+    contrastLevel = 0.0f,
+)*/
+
+AuraMaterialTheme(schemeOptions = schemeOptions) {
     val primaryColor = MaterialTheme.colorScheme.primary
+}
+```
+
+or
+
+```kotlin
+val schemeOptions = AuraSchemeOptions.Default
+
+MaterialTheme(colorScheme = schemeOptions.asAuraColorScheme()) {
 }
 ```
 
 ## Android Views usage
 
 * Activity:
+
+You can write once to apply to all activities:
 
 ```kotlin
 class MyApp : Application() {
@@ -41,6 +52,20 @@ class MyApp : Application() {
                 /* ... */
             )
         )
+    }
+}
+```
+
+or in every activity you want to apply:
+
+```kotlin
+class MyActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        DynamicColors.applyToActivityIfAvailable(
+            this,
+            DynamicColorsOptions()
+        )
+        super.onCreate(savedInstanceState)
     }
 }
 ```

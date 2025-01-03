@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.kyant.aura.compose.AuraMaterialTheme
 
 class ComposeColorMapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

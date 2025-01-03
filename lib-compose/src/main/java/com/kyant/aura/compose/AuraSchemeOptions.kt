@@ -1,4 +1,4 @@
-package com.kyant.aura.demo.compose
+package com.kyant.aura.compose
 
 import android.app.UiModeManager
 import android.content.Context
@@ -6,7 +6,6 @@ import android.os.Build
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
@@ -55,17 +54,6 @@ data class AuraSchemeOptions(
                 contrastLevel = getSystemContrast(LocalContext.current)
             )
     }
-}
-
-@Composable
-fun AuraMaterialTheme(
-    schemeOptions: AuraSchemeOptions = AuraSchemeOptions.Default,
-    content: @Composable () -> Unit
-) {
-    MaterialTheme(
-        colorScheme = schemeOptions.asAuraColorScheme(),
-        content = content
-    )
 }
 
 private fun DynamicScheme.asColorScheme(): ColorScheme {
