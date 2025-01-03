@@ -9,6 +9,8 @@ APIs are unavailable yet.
 
 ## Import
 
+[![JitPack Release](https://jitpack.io/v/Kyant0/aura.svg)](https://jitpack.io/#Kyant0/Aura)
+
 ```kotlin
 // build.gradle.kts
 allprojects {
