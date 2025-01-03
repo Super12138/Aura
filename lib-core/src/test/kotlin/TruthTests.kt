@@ -165,7 +165,7 @@ class TruthTests {
     @Test
     fun palette() {
         val contrasts = listOf(-1.0, -0.5, 0.0, 0.5, 1.0)
-        val hues = (0..<360 step 30).toList()
+        val hues = (0..<360 step 1).toList()
         val chroma = 200.0
         val tone = 40.0
         val colors = ArrayList<Pair<Hct, com.kyant.aura.core.hct.Hct>>(hues.size)

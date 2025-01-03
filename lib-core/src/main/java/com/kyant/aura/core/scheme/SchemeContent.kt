@@ -49,7 +49,7 @@ class SchemeContent(sourceColorHct: Hct, isDark: Boolean, contrastLevel: Double)
     ),
     tertiaryPalette = TonalPalette.fromHct(
         TemperatureCache(sourceColorHct)
-            .getAnalogousColorAt(count = 3, divisions = 6, index = 2)
+            .getAnalogousColors(3, 6)[2]
             .fixIfDisliked()
     ),
     neutralPalette = TonalPalette.fromHueAndChroma(sourceColorHct.hue, sourceColorHct.chroma / 8.0),
