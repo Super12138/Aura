@@ -1,10 +1,14 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
+    `maven-publish`
 }
 
+group = "com.kyant"
+version = libs.versions.lib.version.get()
+
 android {
-    namespace = "com.kyant.aura.compose"
+    namespace = "com.kyant.aura.views"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     buildToolsVersion = libs.versions.android.buildToolsVersion.get()
 
@@ -39,4 +43,17 @@ android {
 dependencies {
     api(project(":lib-core"))
     implementation("com.google.android.material:material:1.13.0-alpha09")
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            register("mavenRelease", MavenPublication::class) {
+                groupId = "com.kyant"
+                artifactId = "aura-views"
+                version = libs.versions.lib.version.get()
+                from(components["release"])
+            }
+        }
+    }
 }

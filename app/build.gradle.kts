@@ -14,7 +14,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = libs.versions.android.versionCode.get().toInt()
-        versionName = libs.versions.android.versionName.get()
+        versionName = libs.versions.lib.version.get()
     }
     buildTypes {
         release {

@@ -9,6 +9,20 @@ APIs are unavailable yet.
 
 ## Import
 
+```kotlin
+// build.gradle.kts
+allprojects {
+    repositories {
+        maven("https://jitpack.io")
+    }
+}
+
+// app/build.gradle.kts
+implementation("com.github.Kyant0:aura-core:<version>") // core
+implementation("com.github.Kyant0:aura-views:<version>") // Android Views
+implementation("com.github.Kyant0:aura-compose:<version>") // Jetpack Compose
+```
+
 ## Jetpack Compose usage
 
 ```kotlin

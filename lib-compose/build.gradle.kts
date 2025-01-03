@@ -2,7 +2,11 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.composeCompiler)
+    `maven-publish`
 }
+
+group = "com.kyant"
+version = libs.versions.lib.version.get()
 
 android {
     namespace = "com.kyant.aura.compose"
@@ -45,5 +49,17 @@ dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2024.12.01")
     implementation(composeBom)
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.foundation:foundation")
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            register("mavenRelease", MavenPublication::class) {
+                groupId = "com.kyant"
+                artifactId = "aura-compose"
+                version = libs.versions.lib.version.get()
+                from(components["release"])
+            }
+        }
+    }
 }
