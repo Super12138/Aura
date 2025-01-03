@@ -20,9 +20,9 @@ allprojects {
 }
 
 // app/build.gradle.kts
-implementation("com.github.Kyant0:aura-core:<version>") // core
-implementation("com.github.Kyant0:aura-views:<version>") // Android Views
-implementation("com.github.Kyant0:aura-compose:<version>") // Jetpack Compose
+implementation("com.github.Kyant0.Aura:aura-core:<version>") // core
+implementation("com.github.Kyant0.Aura:aura-views:<version>") // Android Views
+implementation("com.github.Kyant0.Aura:aura-compose:<version>") // Jetpack Compose
 ```
 
 ## Jetpack Compose usage

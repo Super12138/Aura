@@ -117,6 +117,7 @@ class QuantizerWu : Quantizer {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun createBoxes(maxColorCount: Int): Int {
         cubes = arrayOfNulls<Box>(maxColorCount) as Array<Box>
         for (i in 0..<maxColorCount) {
