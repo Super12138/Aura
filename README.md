@@ -12,6 +12,9 @@ APIs are unavailable yet.
 ## Jetpack Compose usage
 
 ```kotlin
+import com.kyant.aura.compose.AuraMaterialTheme
+import com.kyant.aura.compose.AuraSchemeOptions
+
 val schemeOptions = AuraSchemeOptions.Default/*.copy(
     sourceColor = sourceColor,
     variant = Variant.TONAL_SPOT,
@@ -27,6 +30,8 @@ AuraMaterialTheme(schemeOptions = schemeOptions) {
 or
 
 ```kotlin
+import com.kyant.aura.compose.AuraSchemeOptions
+
 val schemeOptions = AuraSchemeOptions.Default
 
 MaterialTheme(colorScheme = schemeOptions.asAuraColorScheme()) {
@@ -40,6 +45,10 @@ MaterialTheme(colorScheme = schemeOptions.asAuraColorScheme()) {
 You can write once to apply to all activities:
 
 ```kotlin
+import com.kyant.aura.views.dynamic.ContentBasedDynamicColorSource
+import com.kyant.aura.views.dynamic.DynamicColors
+import com.kyant.aura.views.dynamic.DynamicColorsOptions
+
 class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
@@ -59,6 +68,9 @@ class MyApp : Application() {
 or in every activity you want to apply:
 
 ```kotlin
+import com.kyant.aura.views.dynamic.DynamicColors
+import com.kyant.aura.views.dynamic.DynamicColorsOptions
+
 class MyActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         DynamicColors.applyToActivityIfAvailable(
@@ -73,6 +85,8 @@ class MyActivity : AppCompatActivity() {
 * Fragment, View:
 
 ```kotlin
+import com.kyant.aura.views.dynamic.DynamicColors
+
 val context = DynamicColors.wrapContextIfAvailable(context)
 ```
 
