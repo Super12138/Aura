@@ -27,19 +27,19 @@ import kotlin.math.roundToInt
  * CAM16.
  */
 internal object ColorUtils {
-    private val SRGB_TO_XYZ = arrayOf(
+    val SRGB_TO_XYZ = arrayOf(
         doubleArrayOf(0.41233895, 0.35762064, 0.18051042),
         doubleArrayOf(0.2126, 0.7152, 0.0722),
         doubleArrayOf(0.01932141, 0.11916382, 0.95034478),
     )
-    private val XYZ_TO_SRGB = arrayOf(
+    val XYZ_TO_SRGB = arrayOf(
         doubleArrayOf(3.2413774792388685, -1.5376652402851851, -0.49885366846268053),
         doubleArrayOf(-0.9691452513005321, 1.8758853451067872, 0.04156585616912061),
         doubleArrayOf(0.05562093689691305, -0.20395524564742123, 1.0571799111220335),
     )
-    private const val WHITE_POINT_D65_X = 95.047
-    private const val WHITE_POINT_D65_Y = 100.0
-    private const val WHITE_POINT_D65_Z = 108.883
+    const val WHITE_POINT_D65_X = 95.047
+    const val WHITE_POINT_D65_Y = 100.0
+    const val WHITE_POINT_D65_Z = 108.883
 
     const val Y_FROM_LINRGB_R = 0.2126
     const val Y_FROM_LINRGB_G = 0.7152
@@ -100,6 +100,9 @@ internal object ColorUtils {
      */
     @JvmStatic
     fun labFromArgb(argb: Int): DoubleArray {
+        // ===========================================================
+        // Operations inlined from C to avoid repeated calculation
+        // ===========================================================
         val linearR = linearized(argb shr 16 and 0xFF)
         val linearG = linearized(argb shr 8 and 0xFF)
         val linearB = linearized(argb and 0xFF)

@@ -64,12 +64,21 @@ val argb: Int = hct.asArgb()
 ## Benchmarks
 
 ```
-        4,245   ns          45 allocs    googleHct
-        2,492   ns           1 allocs    auraHct
+        4,135   ns          45 allocs    googleHct
+        2,452   ns           1 allocs    auraHct
 
-        2,304   ns          18 allocs    googleHct2
-        1,481   ns           2 allocs    auraHct2
+        2,284   ns          18 allocs    googleHct2
+        1,490   ns           2 allocs    auraHct2
 
-      494,566   ns        5830 allocs    googlePalette
-      218,391   ns        1023 allocs    auraPalette
+      490,223   ns        5830 allocs    googlePalette
+      219,272   ns        1022 allocs    auraPalette
+
+    2,809,882   ns       27627 allocs    googleFidelityPalette
+    1,709,904   ns        2112 allocs    auraFidelityPalette
+    
+      734,548   ns         504 allocs    googleQuantize
+      809,711   ns         492 allocs    auraQuantize
+    
+      852,304   ns        1227 allocs    googleQuantize2
+      902,532   ns        1097 allocs    auraQuantize2
 ```
