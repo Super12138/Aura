@@ -159,19 +159,6 @@ class Hct
         return Hct(hue, chroma, tone)
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Hct) return false
-        return hue == other.hue && chroma == other.chroma && tone == other.tone
-    }
-
-    override fun hashCode(): Int {
-        var result = hue.hashCode()
-        result = 31 * result + chroma.hashCode()
-        result = 31 * result + tone.hashCode()
-        return result
-    }
-
     override fun toString(): String {
         return "Hct(hue=$hue, chroma=$chroma, tone=$tone)"
     }
