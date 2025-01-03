@@ -76,7 +76,7 @@ class TemperatureCache
 
         hcts.add(input)
 
-        tempsByHct = hcts.associateWith { hct -> rawTemperature(hct) }
+        tempsByHct = hcts.associateWith { hct -> rawTemperature(hct.asArgb()) }
 
         val hctsByTemp = hcts.sortedBy { hct -> tempsByHct.getValue(hct) }
         val coldest = hctsByTemp.first()
@@ -266,8 +266,7 @@ class TemperatureCache
          * - Upper bound: 8.61. Chroma is infinite. Assuming max of Lab chroma 130.
          */
         @JvmStatic
-        fun rawTemperature(color: Hct): Double {
-            val argb = color.asArgb()
+        fun rawTemperature(argb: Int): Double {
             // ============================================================================
             // Operations inlined from ColorUtils.labFromArgb to avoid repeated calculation
             // ============================================================================
