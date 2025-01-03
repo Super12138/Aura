@@ -44,12 +44,13 @@ object DislikeAnalyzer {
     /**
      * If color is disliked, lighten it to make it likable.
      */
+    @Suppress("NOTHING_TO_INLINE")
     @JvmStatic
-    fun Hct.fixIfDisliked(): Hct {
-        if (isDisliked()) {
-            return Hct(hue, chroma, 70.0)
+    inline fun Hct.fixIfDisliked(): Hct {
+        return if (isDisliked()) {
+            Hct(hue, chroma, 70.0)
+        } else {
+            this
         }
-
-        return this
     }
 }

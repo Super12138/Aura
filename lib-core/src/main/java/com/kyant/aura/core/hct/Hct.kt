@@ -169,8 +169,6 @@ class Hct
             // ===========================================================
             // Operations inlined from Cam16 to avoid repeated calculation
             // ===========================================================
-            val vc = DefaultViewingConditions
-
             val linrgbR = ColorUtils.linearized(argb shr 16 and 0xFF)
             val linrgbG = ColorUtils.linearized(argb shr 8 and 0xFF)
             val linrgbB = ColorUtils.linearized(argb and 0xFF)
