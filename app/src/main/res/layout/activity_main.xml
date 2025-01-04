@@ -9,15 +9,19 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/btn_views"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Views world" />
+        android:text="This is current theme" />
+
+    <FrameLayout
+        android:id="@+id/another_theme_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/btn_compose"
+        android:id="@+id/btn_change_theme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Compose world" />
+        android:text="Change theme" />
 
 </LinearLayout>

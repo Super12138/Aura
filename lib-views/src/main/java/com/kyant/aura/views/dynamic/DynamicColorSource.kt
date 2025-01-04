@@ -10,12 +10,14 @@ sealed interface DynamicColorSource {
     val seedColor: Int
 }
 
-class ContentBasedDynamicColorSource(
+@JvmInline
+value class ContentBasedDynamicColorSource(
     /** The source color to generate Material color palette. */
     @ColorInt override val seedColor: Int
 ) : DynamicColorSource
 
-class UserGeneratedDynamicColorSource(
+@JvmInline
+value class UserGeneratedDynamicColorSource(
     /** The source image from which to extract the seed color for the Material color palette. */
     val bitmap: Bitmap
 ) : DynamicColorSource {

@@ -25,7 +25,7 @@
         <activity android:name=".views.ViewsActivity" />
         <activity android:name=".compose.ComposeColorSchemeActivity" />
         <activity android:name=".compose.ComposePaletteActivity" />
-        <activity android:name=".compose.ComposeColorMapActivity" />
+        <activity android:name=".compose.ComposeHctGamutActivity" />
     </application>
 
 </manifest>

@@ -39,8 +39,7 @@ fun ColorSchemeContent(
     onSchemeOptionsChange: (AuraSchemeOptions) -> Unit
 ) {
     val scheme = remember(schemeOptions) { schemeOptions.asDynamicScheme() }
-    val mdc = remember { MaterialDynamicColors() }
-    val colors = remember { mdc.allDynamicColors().map { it() } }
+    val colors = remember { MaterialDynamicColors().allDynamicColors().map { it() } }
 
     Column(Modifier.safeDrawingPadding()) {
         val variantSliderState = remember {
@@ -59,7 +58,7 @@ fun ColorSchemeContent(
         val contrastLevelSliderState = remember {
             SliderState(
                 value = schemeOptions.contrastLevel,
-                steps = 9,
+                steps = 19,
                 valueRange = -1f..1f
             )
         }
@@ -129,7 +128,7 @@ fun ColorSchemeContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Contrast Level",
+                        "Contrast level",
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(

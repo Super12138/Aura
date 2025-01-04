@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.kyant.aura.demo.compose.ComposeColorMapActivity
 import com.kyant.aura.demo.compose.ComposeColorSchemeActivity
+import com.kyant.aura.demo.compose.ComposeHctGamutActivity
 import com.kyant.aura.demo.compose.ComposePaletteActivity
 import com.kyant.aura.demo.views.ViewsActivity
 
@@ -63,7 +63,7 @@ fun MainContent() {
             Button({ context.startActivity(Intent(context, ComposePaletteActivity::class.java)) }) {
                 Text("Palette")
             }
-            Button({ context.startActivity(Intent(context, ComposeColorMapActivity::class.java)) }) {
+            Button({ context.startActivity(Intent(context, ComposeHctGamutActivity::class.java)) }) {
                 Text("HCT gamut")
             }
         }

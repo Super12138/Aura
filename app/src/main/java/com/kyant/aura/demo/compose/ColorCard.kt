@@ -25,7 +25,7 @@ fun ColorCard(
     dynamicColor: DynamicColor,
     hct: Hct
 ) {
-    val color = Color(dynamicScheme.getHct(dynamicColor).asArgb())
+    val color = Color(dynamicScheme.getArgb(dynamicColor))
 
     Card(
         Modifier

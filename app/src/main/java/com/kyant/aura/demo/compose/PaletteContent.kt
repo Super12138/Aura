@@ -101,7 +101,7 @@ fun PaletteContent() {
                 colorProvider.colors.forEachIndexed { i, colorList ->
                     Column(Modifier.weight(1f)) {
                         colorList.forEachIndexed shadeLoop@{ j, color ->
-                            ColorCell(
+                            ColorChip(
                                 hct = Hct(color),
                                 text = "${colorProvider.colorNames[i]}-${colorProvider.shadeNumbers[j]}",
                                 modifier = Modifier

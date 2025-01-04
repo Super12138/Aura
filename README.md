@@ -125,6 +125,9 @@ val context = DynamicColors.wrapContextIfAvailable(context)
 ```kotlin
 val hct = Hct(hue, chroma, tone)
 val argb: Int = hct.asArgb()
+
+// or in a single step
+val argb: Int = Hct.toArgb(hue, chroma, tone)
 ```
 
 ## Benchmarks

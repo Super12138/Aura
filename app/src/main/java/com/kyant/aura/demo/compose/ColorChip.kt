@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import com.kyant.aura.core.hct.Hct
 
 @Composable
-fun ColorCell(
+fun ColorChip(
     hct: Hct,
     text: String,
     modifier: Modifier = Modifier

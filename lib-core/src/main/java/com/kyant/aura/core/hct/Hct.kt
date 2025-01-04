@@ -165,6 +165,11 @@ class Hct
 
     companion object {
         @JvmStatic
+        fun toArgb(hue: Double, chroma: Double, tone: Double): Int {
+            return HctSolver.solveToInt(hue, chroma, tone)
+        }
+
+        @JvmStatic
         fun hueOf(argb: Int): Double {
             // ===========================================================
             // Operations inlined from Cam16 to avoid repeated calculation

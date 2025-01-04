@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.kyant.aura.compose.AuraMaterialTheme
 
-class ComposeColorMapActivity : ComponentActivity() {
+class ComposeHctGamutActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -23,7 +23,7 @@ class ComposeColorMapActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(Color.White)
                 ) {
-                    ColorMapContent()
+                    HctGamutContent()
                 }
             }
         }
