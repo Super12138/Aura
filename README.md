@@ -5,8 +5,6 @@ optimized for speed and performance.
 
 Aura supports **Android Views** (mdc-android) and **Jetpack Compose** (material3).
 
-APIs are unavailable yet.
-
 ## Import
 
 [![JitPack Release](https://jitpack.io/v/Kyant0/aura.svg)](https://jitpack.io/#Kyant0/Aura)
@@ -55,6 +53,19 @@ MaterialTheme(colorScheme = schemeOptions.asAuraColorScheme()) {
 ```
 
 ## Android Views usage
+
+* Get a color:
+
+```kotlin
+import com.kyant.aura.views.MaterialColors
+import com.kyant.aura.views.dynamic.MaterialColorRoles
+
+// For a view
+view.getMaterialColor(colorRole = MaterialColorRoles.Primary)
+
+// For a context
+context.getMaterialColor(colorRole = MaterialColorRoles.Primary)
+```
 
 * Activity:
 
