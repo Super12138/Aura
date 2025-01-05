@@ -26,19 +26,33 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastRoundToInt
 import com.kyant.aura.compose.AuraSchemeOptions
+import com.kyant.aura.core.dynamiccolor.Variant
 import com.kyant.aura.core.hct.Hct
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.merge
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaletteContent() {
     Column(Modifier.safeDrawingPadding()) {
         val schemeOptions = AuraSchemeOptions.Default
+        val variantSliderState = remember {
+            SliderState(
+                value = schemeOptions.variant.ordinal.toFloat(),
+                steps = Variant.entries.size - 2,
+                valueRange = 0f..(Variant.entries.size - 1).toFloat()
+            )
+        }
         val hueSliderState = remember {
             SliderState(
                 value = Hct(schemeOptions.sourceColor.toArgb()).hue.toFloat(),
                 valueRange = 0f..360f
+            )
+        }
+        val chromaSliderState = remember {
+            SliderState(
+                value = Hct(schemeOptions.sourceColor.toArgb()).chroma.toFloat(),
+                valueRange = 0f..100f
             )
         }
         var colorProvider by remember {
@@ -47,7 +61,10 @@ fun PaletteContent() {
                     schemeOptions.copy(
                         sourceColor = Color(
                             Hct(schemeOptions.sourceColor.toArgb())
-                                .copy(hue = hueSliderState.value.toDouble())
+                                .copy(
+                                    hue = hueSliderState.value.toDouble(),
+                                    chroma = chromaSliderState.value.toDouble()
+                                )
                                 .asArgb()
                         )
                     ).asDynamicScheme()
@@ -56,25 +73,48 @@ fun PaletteContent() {
         }
 
         LaunchedEffect(Unit) {
-            launch {
-                snapshotFlow { hueSliderState.value }
-                    .collectLatest { hue ->
-                        colorProvider = DynamicColorProvider(
-                            schemeOptions.copy(
-                                sourceColor = Color(
-                                    Hct(schemeOptions.sourceColor.toArgb())
-                                        .copy(hue = hue.toDouble())
-                                        .asArgb()
+            val update = {
+                colorProvider = DynamicColorProvider(
+                    schemeOptions.copy(
+                        variant = Variant.entries[variantSliderState.value.toInt()],
+                        sourceColor = Color(
+                            Hct(schemeOptions.sourceColor.toArgb())
+                                .copy(
+                                    hue = hueSliderState.value.toDouble(),
+                                    chroma = chromaSliderState.value.toDouble()
                                 )
-                            ).asDynamicScheme()
+                                .asArgb()
                         )
-                    }
+                    ).asDynamicScheme()
+                )
             }
+            merge(
+                snapshotFlow { variantSliderState.value },
+                snapshotFlow { hueSliderState.value },
+                snapshotFlow { chromaSliderState.value }
+            ).collectLatest { update() }
         }
 
         Column(
             Modifier.padding(horizontal = 24.dp)
         ) {
+            Column {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Variant",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        Variant.entries[variantSliderState.value.toInt()].name.replace('_', ' '),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Slider(variantSliderState)
+            }
             Column {
                 Row(
                     Modifier.fillMaxWidth(),
@@ -91,6 +131,23 @@ fun PaletteContent() {
                     )
                 }
                 Slider(hueSliderState)
+            }
+            Column {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Chroma",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        "${chromaSliderState.value.fastRoundToInt()}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Slider(chromaSliderState)
             }
 
             Row(

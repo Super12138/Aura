@@ -30,7 +30,6 @@ import com.kyant.aura.core.dynamiccolor.Variant
 import com.kyant.aura.core.hct.Hct
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +54,12 @@ fun ColorSchemeContent(
                 valueRange = 0f..360f
             )
         }
+        val chromaSliderState = remember {
+            SliderState(
+                value = Hct(schemeOptions.sourceColor.toArgb()).chroma.toFloat(),
+                valueRange = 0f..100f
+            )
+        }
         val contrastLevelSliderState = remember {
             SliderState(
                 value = schemeOptions.contrastLevel,
@@ -69,19 +74,21 @@ fun ColorSchemeContent(
                     schemeOptions.copy(
                         variant = Variant.entries[variantSliderState.value.toInt()],
                         sourceColor = Color(
-                            Hct(schemeOptions.sourceColor.toArgb()).copy(hue = hueSliderState.value.toDouble()).asArgb()
+                            Hct(schemeOptions.sourceColor.toArgb()).copy(
+                                hue = hueSliderState.value.toDouble(),
+                                chroma = chromaSliderState.value.toDouble()
+                            ).asArgb()
                         ),
                         contrastLevel = contrastLevelSliderState.value
                     )
                 )
             }
-            launch {
-                merge(
-                    snapshotFlow { variantSliderState.value },
-                    snapshotFlow { hueSliderState.value },
-                    snapshotFlow { contrastLevelSliderState.value }
-                ).collectLatest { update() }
-            }
+            merge(
+                snapshotFlow { variantSliderState.value },
+                snapshotFlow { hueSliderState.value },
+                snapshotFlow { chromaSliderState.value },
+                snapshotFlow { contrastLevelSliderState.value }
+            ).collectLatest { update() }
         }
 
         Column(
@@ -120,6 +127,23 @@ fun ColorSchemeContent(
                     )
                 }
                 Slider(hueSliderState)
+            }
+            Column {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Chroma",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        "${chromaSliderState.value.fastRoundToInt()}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Slider(chromaSliderState)
             }
             Column {
                 Row(
