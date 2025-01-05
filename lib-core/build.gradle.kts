@@ -8,7 +8,7 @@ group = "com.kyant"
 version = libs.versions.lib.version.get()
 
 android {
-    namespace = "com.kyant.aura.views"
+    namespace = "com.kyant.aura.core"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     buildToolsVersion = libs.versions.android.buildToolsVersion.get()
 
@@ -41,7 +41,6 @@ android {
 }
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.9.1")
     testImplementation(kotlin("test"))
     testImplementation(libs.m3color)
 }

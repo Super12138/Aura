@@ -29,7 +29,6 @@ benchmark-junit4 = { group = "androidx.benchmark", name = "benchmark-junit4", ve
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 benchmark = { id = "androidx.benchmark", version.ref = "benchmark" }
